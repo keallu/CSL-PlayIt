@@ -188,6 +188,17 @@ namespace PlayIt.Panels
 
                 _close = UIUtils.CreateMenuPanelCloseButton(this);
                 _close.relativePosition = new Vector3(width - 37f, 3f);
+                _close.eventClick += (component, eventParam) =>
+                {
+                    if (!eventParam.used)
+                    {
+                        _close.parent.Hide();
+                        ModConfig.Instance.ShowPanel = false;
+                        ModConfig.Instance.Save();
+
+                        eventParam.Use();
+                    }
+                };
 
                 _dragHandle = UIUtils.CreateMenuPanelDragHandle(this);
                 _dragHandle.width = width - 40f;
@@ -236,7 +247,7 @@ namespace PlayIt.Panels
                     _timeDayNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeDayNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayNightSpeedSliderNumeral.width - 10f, 0f);
 
-                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", -1f, 23f, 1f, ModConfig.Instance.DayNightSpeed);
+                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", -1f, 23f, 1f, 1f, ModConfig.Instance.DayNightSpeed);
                     _timeDayNightSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.DayNightSpeed = value;
@@ -260,7 +271,7 @@ namespace PlayIt.Panels
                     _timeTimeOfDaySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeTimeOfDaySliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeOfDaySliderNumeral.width - 10f, 0f);
 
-                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", 0f, 24f, 0.01f, 12f);
+                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", 0f, 24f, 0.01f, 1f, 12f);
                     _timeTimeOfDaySlider.eventValueChanged += (component, value) =>
                     {
                         if (Mathf.Abs(DayNightManager.Instance.DayTimeHour - value) > 0.1f)
@@ -322,7 +333,7 @@ namespace PlayIt.Panels
                     _weatherRainIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherRainIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherRainIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherRainIntensitySlider = UIUtils.CreateSlider(panel, "WeatherRainIntensitySlider", 0f, 1f, 0.01f, 0f);
+                    _weatherRainIntensitySlider = UIUtils.CreateSlider(panel, "WeatherRainIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherRainIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetRain = value;
@@ -346,7 +357,7 @@ namespace PlayIt.Panels
                     _weatherFogIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherFogIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherFogIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherFogIntensitySlider = UIUtils.CreateSlider(panel, "WeatherFogIntensitySlider", 0f, 1f, 0.01f, 0f);
+                    _weatherFogIntensitySlider = UIUtils.CreateSlider(panel, "WeatherFogIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherFogIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetFog = value;
@@ -370,7 +381,7 @@ namespace PlayIt.Panels
                     _weatherCloudIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherCloudIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherCloudIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherCloudIntensitySlider = UIUtils.CreateSlider(panel, "WeatherCloudIntensitySlider", 0f, 1f, 0.01f, 0f);
+                    _weatherCloudIntensitySlider = UIUtils.CreateSlider(panel, "WeatherCloudIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherCloudIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetCloud = value;
@@ -394,7 +405,7 @@ namespace PlayIt.Panels
                     _weatherNorthernLightsIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherNorthernLightsIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherNorthernLightsIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherNorthernLightsIntensitySlider = UIUtils.CreateSlider(panel, "WeatherNorthernLightsIntensitySlider", 0f, 1f, 0.01f, 0f);
+                    _weatherNorthernLightsIntensitySlider = UIUtils.CreateSlider(panel, "WeatherNorthernLightsIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherNorthernLightsIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetNorthernLights = value;
@@ -420,7 +431,7 @@ namespace PlayIt.Panels
                     _weatherDynamicWeatherLabel.relativePosition = new Vector3(0f, 0f);
 
                     _weatherDynamicWeatherButton = UIUtils.CreatePanelButton(_weatherDynamicWeatherPanel, "WeatherDynamicWeatherButton", "Enable");
-                    _weatherDynamicWeatherButton.relativePosition = new Vector3(0f, 25f);
+                    _weatherDynamicWeatherButton.relativePosition = new Vector3(0f, 40f);
                     _weatherDynamicWeatherButton.eventClick += (component, eventParam) =>
                     {
                         if (!eventParam.used)
