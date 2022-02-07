@@ -10,8 +10,17 @@
         public bool ShowPanel { get; set; } = true;
         public float PanelPositionX { get; set; } = 0f;
         public float PanelPositionY { get; set; } = 0f;
+        public float GameSpeed { get; set; } = 1f;
         public float DayNightSpeed { get; set; } = 0f;
+        public float RainIntensity { get; set; } = 0f;
+        public float FogIntensity { get; set; } = 0f;
+        public float CloudIntensity { get; set; } = 0f;
+        public float NorthernLightsIntensity { get; set; } = 0f;
         public int TimeConvention { get; set; } = 1;
+        public bool LockRainIntensity { get; set; } = false;
+        public bool LockFogIntensity { get; set; } = false;
+        public bool LockCloudIntensity { get; set; } = false;
+        public bool LockNorthernLightsIntensity { get; set; } = false;
 
         private static ModConfig instance;
 

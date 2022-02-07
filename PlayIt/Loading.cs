@@ -12,6 +12,7 @@ namespace PlayIt
     {
         private LoadMode _loadMode;
         private GameObject _modManagerGameObject;
+        private GameObject _gameSpeedGameObject;
         private GameObject _dayNightManagerGameObject;
         private GameObject _mainPanelGameObject;
 
@@ -28,6 +29,9 @@ namespace PlayIt
 
                 _modManagerGameObject = new GameObject("PlayItModManager");
                 _modManagerGameObject.AddComponent<ModManager>();
+
+                _gameSpeedGameObject = new GameObject("PlayItGameManager");
+                _gameSpeedGameObject.AddComponent<GameManager>();
 
                 _dayNightManagerGameObject = new GameObject("PlayItDayNightManager");
                 _dayNightManagerGameObject.AddComponent<DayNightManager>();

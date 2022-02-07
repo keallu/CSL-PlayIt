@@ -18,6 +18,9 @@ namespace PlayIt.Panels
         private UITabContainer _tabContainer;
         private UIButton _templateButton;
 
+        private UILabel _timeGameSpeedSliderLabel;
+        private UILabel _timeGameSpeedSliderNumeral;
+        private UISlider _timeGameSpeedSlider;
         private UILabel _timeDayNightSpeedSliderLabel;
         private UILabel _timeDayNightSpeedSliderNumeral;
         private UISlider _timeDayNightSpeedSlider;
@@ -46,6 +49,10 @@ namespace PlayIt.Panels
 
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
+        private UICheckBox _advancedLockRainIntensityCheckBox;
+        private UICheckBox _advancedLockFogIntensityCheckBox;
+        private UICheckBox _advancedLockCloudIntensityCheckBox;
+        private UICheckBox _advancedLockNorthernLightsIntensityCheckBox;
 
         public override void Awake()
         {
@@ -101,7 +108,9 @@ namespace PlayIt.Panels
 
                     if (isVisible)
                     {
+                        UpdateGameSpeed();
                         UpdateTimeOfDay();
+                        UpdateWeather();
 
                         _timeDayNightCyclePanel.isVisible = !ModUtils.GetDayNightCycleInOptionsGameplayPanel();
                         _weatherDynamicWeatherPanel.isVisible = !ModUtils.GetDynamicWeatherInOptionsGameplayPanel();
@@ -126,6 +135,9 @@ namespace PlayIt.Panels
                 DestroyGameObject(_tabstrip);
                 DestroyGameObject(_tabContainer);
                 DestroyGameObject(_templateButton);
+                DestroyGameObject(_timeGameSpeedSliderLabel);
+                DestroyGameObject(_timeGameSpeedSliderNumeral);
+                DestroyGameObject(_timeGameSpeedSlider);
                 DestroyGameObject(_timeDayNightSpeedSliderLabel);
                 DestroyGameObject(_timeDayNightSpeedSliderNumeral);
                 DestroyGameObject(_timeDayNightSpeedSlider);
@@ -152,6 +164,10 @@ namespace PlayIt.Panels
                 DestroyGameObject(_weatherDynamicWeatherButton);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
+                DestroyGameObject(_advancedLockRainIntensityCheckBox);
+                DestroyGameObject(_advancedLockFogIntensityCheckBox);
+                DestroyGameObject(_advancedLockCloudIntensityCheckBox);
+                DestroyGameObject(_advancedLockNorthernLightsIntensityCheckBox);
             }
             catch (Exception e)
             {
@@ -239,8 +255,32 @@ namespace PlayIt.Panels
                     panel.autoLayoutPadding.top = 0;
                     panel.autoLayoutPadding.bottom = 10;
 
+                    _timeGameSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeGameSpeedSliderLabel", "Game Speed");
+                    _timeGameSpeedSliderLabel.tooltip = "Set the speed at which the game passes";
+
+                    _timeGameSpeedSliderNumeral = UIUtils.CreateLabel(_timeGameSpeedSliderLabel, "TimeGameSpeedSliderNumeral", FormatGameSpeed(ModConfig.Instance.GameSpeed));
+                    _timeGameSpeedSliderNumeral.width = 100f;
+                    _timeGameSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _timeGameSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeGameSpeedSliderNumeral.width - 10f, 0f);
+
+                    _timeGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", 0.1f, 3f, 0.05f, 0.05f, ModConfig.Instance.GameSpeed);
+                    _timeGameSpeedSlider.eventValueChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.GameSpeed = value;
+                        ModConfig.Instance.Save();
+
+                        _timeGameSpeedSliderNumeral.text = FormatGameSpeed(value);
+                    };
+                    _timeGameSpeedSlider.eventMouseUp += (component, eventParam) =>
+                    {
+                        if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
+                        {
+                            _timeGameSpeedSlider.value = 1f;
+                        }
+                    };
+
                     _timeDayNightSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeDayNightSpeedSliderLabel", "Day/Night Speed");
-                    _timeDayNightSpeedSliderLabel.tooltip = "Set the speed of day/night cycle";
+                    _timeDayNightSpeedSliderLabel.tooltip = "Set the speed of the day/night cycle";
 
                     _timeDayNightSpeedSliderNumeral = UIUtils.CreateLabel(_timeDayNightSpeedSliderLabel, "TimeDayNightSpeedSliderNumeral", FormatDayNightSpeed(ModConfig.Instance.DayNightSpeed));
                     _timeDayNightSpeedSliderNumeral.width = 100f;
@@ -339,6 +379,9 @@ namespace PlayIt.Panels
                         Singleton<WeatherManager>.instance.m_targetRain = value;
                         Singleton<WeatherManager>.instance.m_currentRain = value;
 
+                        ModConfig.Instance.RainIntensity = value;
+                        ModConfig.Instance.Save();
+
                         _weatherRainIntensitySliderNumeral.text = value.ToString();
                     };
                     _weatherRainIntensitySlider.eventMouseUp += (component, eventParam) =>
@@ -362,6 +405,9 @@ namespace PlayIt.Panels
                     {
                         Singleton<WeatherManager>.instance.m_targetFog = value;
                         Singleton<WeatherManager>.instance.m_currentFog = value;
+
+                        ModConfig.Instance.FogIntensity = value;
+                        ModConfig.Instance.Save();
 
                         _weatherFogIntensitySliderNumeral.text = value.ToString();
                     };
@@ -387,6 +433,9 @@ namespace PlayIt.Panels
                         Singleton<WeatherManager>.instance.m_targetCloud = value;
                         Singleton<WeatherManager>.instance.m_currentCloud = value;
 
+                        ModConfig.Instance.CloudIntensity = value;
+                        ModConfig.Instance.Save();
+
                         _weatherCloudIntensitySliderNumeral.text = value.ToString();
                     };
                     _weatherCloudIntensitySlider.eventMouseUp += (component, eventParam) =>
@@ -410,6 +459,9 @@ namespace PlayIt.Panels
                     {
                         Singleton<WeatherManager>.instance.m_targetNorthernLights = value;
                         Singleton<WeatherManager>.instance.m_currentNorthernLights = value;
+
+                        ModConfig.Instance.NorthernLightsIntensity = value;
+                        ModConfig.Instance.Save();
 
                         _weatherNorthernLightsIntensitySliderNumeral.text = value.ToString();
                     };
@@ -468,6 +520,38 @@ namespace PlayIt.Panels
                         ModConfig.Instance.TimeConvention = value;
                         ModConfig.Instance.Save();
                     };
+
+                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockRainIntensityCheckBox", "Rain Intensity locked", ModConfig.Instance.LockRainIntensity);
+                    _advancedLockRainIntensityCheckBox.tooltip = "Set intensity of rain to never increase or decrease";
+                    _advancedLockRainIntensityCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.LockRainIntensity = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedLockFogIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockFogIntensityCheckBox", "Fog Intensity locked", ModConfig.Instance.LockFogIntensity);
+                    _advancedLockFogIntensityCheckBox.tooltip = "Set intensity of fog to never increase or decrease";
+                    _advancedLockFogIntensityCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.LockFogIntensity = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedLockCloudIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockCloudIntensityCheckBox", "Cloud Intensity locked", ModConfig.Instance.LockCloudIntensity);
+                    _advancedLockCloudIntensityCheckBox.tooltip = "Set intensity of cloud to never increase or decrease";
+                    _advancedLockCloudIntensityCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.LockCloudIntensity = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedLockNorthernLightsIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockNorthernLightsIntensityCheckBox", "Northern Lights Intensity locked", ModConfig.Instance.LockNorthernLightsIntensity);
+                    _advancedLockNorthernLightsIntensityCheckBox.tooltip = "Set intensity of northern lights to never increase or decrease";
+                    _advancedLockNorthernLightsIntensityCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.LockNorthernLightsIntensity = value;
+                        ModConfig.Instance.Save();
+                    };
                 }
             }
             catch (Exception e)
@@ -489,6 +573,18 @@ namespace PlayIt.Panels
             }
         }
 
+        private void UpdateGameSpeed()
+        {
+            try
+            {
+                _timeGameSpeedSlider.value = GameManager.Instance.GameSpeed;
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:UpdateGameSpeed -> Exception: " + e.Message);
+            }
+        }
+
         private void UpdateTimeOfDay()
         {
             try
@@ -498,6 +594,68 @@ namespace PlayIt.Panels
             catch (Exception e)
             {
                 Debug.Log("[Play It!] MainPanel:UpdateTimeOfDay -> Exception: " + e.Message);
+            }
+        }
+
+        private void UpdateWeather()
+        {
+            try
+            {
+                if (ModConfig.Instance.LockRainIntensity)
+                {
+                    Singleton<WeatherManager>.instance.m_currentRain = _weatherRainIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_targetRain = _weatherRainIntensitySlider.value;
+                }
+                else
+                {
+                    _weatherRainIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentRain;
+                }
+
+                if (ModConfig.Instance.LockFogIntensity)
+                {
+                    Singleton<WeatherManager>.instance.m_currentFog = _weatherFogIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_targetFog = _weatherFogIntensitySlider.value;
+                }
+                else
+                {
+                    _weatherFogIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentFog;
+                }
+
+                if (ModConfig.Instance.LockCloudIntensity)
+                {
+                    Singleton<WeatherManager>.instance.m_currentCloud = _weatherCloudIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_targetCloud = _weatherCloudIntensitySlider.value;
+                }
+                else
+                {
+                    _weatherCloudIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentCloud;
+                }
+
+                if (ModConfig.Instance.LockNorthernLightsIntensity)
+                {
+                    Singleton<WeatherManager>.instance.m_currentNorthernLights = _weatherNorthernLightsIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_targetNorthernLights = _weatherNorthernLightsIntensitySlider.value;
+                }
+                else
+                {
+                    _weatherNorthernLightsIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentNorthernLights;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:UpdateWeather -> Exception: " + e.Message);
+            }
+        }
+
+        private string FormatGameSpeed(float value)
+        {
+            if (value == 1f)
+            {
+                return "Normal";
+            }
+            else
+            {
+                return value.ToString() + "x";
             }
         }
 
