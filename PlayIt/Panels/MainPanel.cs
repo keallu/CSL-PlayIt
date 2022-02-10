@@ -11,6 +11,7 @@ namespace PlayIt.Panels
         private bool _initialized;
         private float _timer;
 
+        private UITextureAtlas _ingameAtlas;
         private UILabel _title;
         private UIButton _close;
         private UIDragHandle _dragHandle;
@@ -78,6 +79,8 @@ namespace PlayIt.Panels
                 {
                     ModProperties.Instance.ResetPanelPosition();
                 }
+
+                _ingameAtlas = ResourceLoader.GetAtlas("Ingame");
 
                 CreateUI();
             }
@@ -199,10 +202,10 @@ namespace PlayIt.Panels
                 width = 400f;
                 height = 400f;
 
-                _title = UIUtils.CreateMenuPanelTitle(this, "Play It!");
+                _title = UIUtils.CreateMenuPanelTitle(this, _ingameAtlas, "Play It!");
                 _title.relativePosition = new Vector3(width / 2f - _title.width / 2f, 15f);
 
-                _close = UIUtils.CreateMenuPanelCloseButton(this);
+                _close = UIUtils.CreateMenuPanelCloseButton(this, _ingameAtlas);
                 _close.relativePosition = new Vector3(width - 37f, 3f);
                 _close.eventClick += (component, eventParam) =>
                 {
@@ -227,16 +230,16 @@ namespace PlayIt.Panels
                     ModConfig.Instance.Save();
                 };
 
-                _tabstrip = UIUtils.CreateTabStrip(this);
+                _tabstrip = UIUtils.CreateTabStrip(this, _ingameAtlas);
                 _tabstrip.width = width - 40f;
                 _tabstrip.relativePosition = new Vector3(20f, 50f);
 
-                _tabContainer = UIUtils.CreateTabContainer(this);
+                _tabContainer = UIUtils.CreateTabContainer(this, _ingameAtlas);
                 _tabContainer.width = width - 40f;
                 _tabContainer.height = height - 120f;
                 _tabContainer.relativePosition = new Vector3(20f, 100f);
 
-                _templateButton = UIUtils.CreateTabButton(this);
+                _templateButton = UIUtils.CreateTabButton(this, _ingameAtlas);
 
                 _tabstrip.tabPages = _tabContainer;
 
@@ -263,7 +266,7 @@ namespace PlayIt.Panels
                     _timeGameSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeGameSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeGameSpeedSliderNumeral.width - 10f, 0f);
 
-                    _timeGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", 0.1f, 3f, 0.05f, 0.05f, ModConfig.Instance.GameSpeed);
+                    _timeGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", _ingameAtlas, 0.1f, 3f, 0.05f, 0.05f, ModConfig.Instance.GameSpeed);
                     _timeGameSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.GameSpeed = value;
@@ -287,7 +290,7 @@ namespace PlayIt.Panels
                     _timeDayNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeDayNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayNightSpeedSliderNumeral.width - 10f, 0f);
 
-                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", -1f, 23f, 1f, 1f, ModConfig.Instance.DayNightSpeed);
+                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", _ingameAtlas, -1f, 23f, 1f, 1f, ModConfig.Instance.DayNightSpeed);
                     _timeDayNightSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.DayNightSpeed = value;
@@ -311,7 +314,7 @@ namespace PlayIt.Panels
                     _timeTimeOfDaySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeTimeOfDaySliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeOfDaySliderNumeral.width - 10f, 0f);
 
-                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", 0f, 24f, 0.01f, 1f, 12f);
+                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", _ingameAtlas, 0f, 24f, 0.01f, 1f, 12f);
                     _timeTimeOfDaySlider.eventValueChanged += (component, value) =>
                     {
                         if (Mathf.Abs(DayNightManager.Instance.DayTimeHour - value) > 0.1f)
@@ -338,7 +341,7 @@ namespace PlayIt.Panels
                     _timeDayNightCycleLabel.height = 50f;
                     _timeDayNightCycleLabel.relativePosition = new Vector3(0f, 0f);
 
-                    _timeDayNightCycleButton = UIUtils.CreatePanelButton(_timeDayNightCyclePanel, "TimeDayNightCycleButton", "Enable");
+                    _timeDayNightCycleButton = UIUtils.CreatePanelButton(_timeDayNightCyclePanel, "TimeDayNightCycleButton", _ingameAtlas, "Enable");
                     _timeDayNightCycleButton.relativePosition = new Vector3(0f, 40f);
                     _timeDayNightCycleButton.eventClick += (component, eventParam) =>
                     {
@@ -373,7 +376,7 @@ namespace PlayIt.Panels
                     _weatherRainIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherRainIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherRainIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherRainIntensitySlider = UIUtils.CreateSlider(panel, "WeatherRainIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
+                    _weatherRainIntensitySlider = UIUtils.CreateSlider(panel, "WeatherRainIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherRainIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetRain = value;
@@ -400,7 +403,7 @@ namespace PlayIt.Panels
                     _weatherFogIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherFogIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherFogIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherFogIntensitySlider = UIUtils.CreateSlider(panel, "WeatherFogIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
+                    _weatherFogIntensitySlider = UIUtils.CreateSlider(panel, "WeatherFogIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherFogIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetFog = value;
@@ -427,7 +430,7 @@ namespace PlayIt.Panels
                     _weatherCloudIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherCloudIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherCloudIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherCloudIntensitySlider = UIUtils.CreateSlider(panel, "WeatherCloudIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
+                    _weatherCloudIntensitySlider = UIUtils.CreateSlider(panel, "WeatherCloudIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherCloudIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetCloud = value;
@@ -454,7 +457,7 @@ namespace PlayIt.Panels
                     _weatherNorthernLightsIntensitySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _weatherNorthernLightsIntensitySliderNumeral.relativePosition = new Vector3(panel.width - _weatherNorthernLightsIntensitySliderNumeral.width - 10f, 0f);
 
-                    _weatherNorthernLightsIntensitySlider = UIUtils.CreateSlider(panel, "WeatherNorthernLightsIntensitySlider", 0f, 1f, 0.01f, 0.1f, 0f);
+                    _weatherNorthernLightsIntensitySlider = UIUtils.CreateSlider(panel, "WeatherNorthernLightsIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherNorthernLightsIntensitySlider.eventValueChanged += (component, value) =>
                     {
                         Singleton<WeatherManager>.instance.m_targetNorthernLights = value;
@@ -482,7 +485,7 @@ namespace PlayIt.Panels
                     _weatherDynamicWeatherLabel.height = 50f;
                     _weatherDynamicWeatherLabel.relativePosition = new Vector3(0f, 0f);
 
-                    _weatherDynamicWeatherButton = UIUtils.CreatePanelButton(_weatherDynamicWeatherPanel, "WeatherDynamicWeatherButton", "Enable");
+                    _weatherDynamicWeatherButton = UIUtils.CreatePanelButton(_weatherDynamicWeatherPanel, "WeatherDynamicWeatherButton", _ingameAtlas, "Enable");
                     _weatherDynamicWeatherButton.relativePosition = new Vector3(0f, 40f);
                     _weatherDynamicWeatherButton.eventClick += (component, eventParam) =>
                     {
@@ -512,7 +515,7 @@ namespace PlayIt.Panels
                     _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(panel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
                     _advancedTimeConventionDropDownLabel.tooltip = "Set the convention of time to either 12 or 24-hours clock";
 
-                    _advancedTimeConventionDropDown = UIUtils.CreateDropDown(panel, "AdvancedTimeConventionDropDown");
+                    _advancedTimeConventionDropDown = UIUtils.CreateDropDown(panel, "AdvancedTimeConventionDropDown", _ingameAtlas);
                     _advancedTimeConventionDropDown.items = ModInvariables.TimeConvention;
                     _advancedTimeConventionDropDown.selectedIndex = ModConfig.Instance.TimeConvention;
                     _advancedTimeConventionDropDown.eventSelectedIndexChanged += (component, value) =>
@@ -521,7 +524,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockRainIntensityCheckBox", "Rain Intensity locked", ModConfig.Instance.LockRainIntensity);
+                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockRainIntensityCheckBox", _ingameAtlas, "Rain Intensity locked", ModConfig.Instance.LockRainIntensity);
                     _advancedLockRainIntensityCheckBox.tooltip = "Set intensity of rain to never increase or decrease";
                     _advancedLockRainIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -529,7 +532,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockFogIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockFogIntensityCheckBox", "Fog Intensity locked", ModConfig.Instance.LockFogIntensity);
+                    _advancedLockFogIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockFogIntensityCheckBox", _ingameAtlas, "Fog Intensity locked", ModConfig.Instance.LockFogIntensity);
                     _advancedLockFogIntensityCheckBox.tooltip = "Set intensity of fog to never increase or decrease";
                     _advancedLockFogIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -537,7 +540,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockCloudIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockCloudIntensityCheckBox", "Cloud Intensity locked", ModConfig.Instance.LockCloudIntensity);
+                    _advancedLockCloudIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockCloudIntensityCheckBox", _ingameAtlas, "Cloud Intensity locked", ModConfig.Instance.LockCloudIntensity);
                     _advancedLockCloudIntensityCheckBox.tooltip = "Set intensity of cloud to never increase or decrease";
                     _advancedLockCloudIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -545,7 +548,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockNorthernLightsIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockNorthernLightsIntensityCheckBox", "Northern Lights Intensity locked", ModConfig.Instance.LockNorthernLightsIntensity);
+                    _advancedLockNorthernLightsIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockNorthernLightsIntensityCheckBox", _ingameAtlas, "Northern Lights Intensity locked", ModConfig.Instance.LockNorthernLightsIntensity);
                     _advancedLockNorthernLightsIntensityCheckBox.tooltip = "Set intensity of northern lights to never increase or decrease";
                     _advancedLockNorthernLightsIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {

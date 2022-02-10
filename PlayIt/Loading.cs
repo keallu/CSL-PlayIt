@@ -10,7 +10,6 @@ namespace PlayIt
 
     public class Loading : LoadingExtensionBase
     {
-        private LoadMode _loadMode;
         private GameObject _modManagerGameObject;
         private GameObject _gameSpeedGameObject;
         private GameObject _dayNightManagerGameObject;
@@ -20,13 +19,6 @@ namespace PlayIt
         {
             try
             {
-                _loadMode = mode;
-
-                if (_loadMode != LoadMode.NewGame && _loadMode != LoadMode.LoadGame && _loadMode != LoadMode.NewGameFromScenario)
-                {
-                    return;
-                }
-
                 _modManagerGameObject = new GameObject("PlayItModManager");
                 _modManagerGameObject.AddComponent<ModManager>();
 
@@ -54,11 +46,6 @@ namespace PlayIt
         {
             try
             {
-                if (_loadMode != LoadMode.NewGame && _loadMode != LoadMode.LoadGame && _loadMode != LoadMode.NewGameFromScenario)
-                {
-                    return;
-                }
-
                 if (_mainPanelGameObject != null)
                 {
                     UnityEngine.Object.Destroy(_mainPanelGameObject);
