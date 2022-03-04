@@ -66,6 +66,13 @@ namespace PlayIt.Managers
         {
             try
             {
+                bool forcePause = false;
+
+                if (ModConfig.Instance.PauseDayNightCycleOnSimulationPause)
+                {
+                    forcePause = simulationManager.SimulationPaused || simulationManager.ForcedSimulationPaused;
+                }
+
                 if (ModConfig.Instance.DayNightSpeed == -1f)
                 {
                     if (!simulationManager.SimulationPaused && !simulationManager.ForcedSimulationPaused)
@@ -79,17 +86,20 @@ namespace PlayIt.Managers
                 }
                 else if (ModConfig.Instance.DayNightSpeed == 0f)
                 {
-                    if (simulationManager.SimulationPaused || simulationManager.ForcedSimulationPaused)
+                    if (!forcePause)
                     {
                         simulationManager.m_dayTimeOffsetFrames = simulationManager.m_dayTimeOffsetFrames + 1;
                     }
                 }
                 else
                 {
-                    float factor = Time.deltaTime * ModConfig.Instance.DayNightSpeed * ModConfig.Instance.DayNightSpeed / 576f;
-                    uint offset = (uint)(factor * SimulationManager.DAYTIME_FRAMES);
-                    uint dayTimeOffsetFrames = (simulationManager.m_dayTimeOffsetFrames + offset) & (SimulationManager.DAYTIME_FRAMES - 1);
-                    simulationManager.m_dayTimeOffsetFrames = dayTimeOffsetFrames;
+                    if (!forcePause)
+                    {
+                        float factor = Time.deltaTime * ModConfig.Instance.DayNightSpeed * ModConfig.Instance.DayNightSpeed / 576f;
+                        uint offset = (uint)(factor * SimulationManager.DAYTIME_FRAMES);
+                        uint dayTimeOffsetFrames = (simulationManager.m_dayTimeOffsetFrames + offset) & (SimulationManager.DAYTIME_FRAMES - 1);
+                        simulationManager.m_dayTimeOffsetFrames = dayTimeOffsetFrames;
+                    }
                 }
 
                 previousCurrentFrameIndex = simulationManager.m_currentFrameIndex;

@@ -48,8 +48,11 @@ namespace PlayIt.Panels
         private UILabel _weatherDynamicWeatherLabel;
         private UIButton _weatherDynamicWeatherButton;
 
+        private UILabel _advancedTimeTitle;
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
+        private UICheckBox _advancedPauseDayNightCycleOnSimulationPauseCheckBox;
+        private UILabel _advancedWeatherTitle;
         private UICheckBox _advancedLockRainIntensityCheckBox;
         private UICheckBox _advancedLockFogIntensityCheckBox;
         private UICheckBox _advancedLockCloudIntensityCheckBox;
@@ -109,11 +112,13 @@ namespace PlayIt.Panels
                 {
                     _timer -= 1;
 
+                    UpdateWeather();
+
                     if (isVisible)
                     {
-                        UpdateGameSpeed();
-                        UpdateTimeOfDay();
-                        UpdateWeather();
+                        RefreshGameSpeed();
+                        RefreshTimeOfDay();
+                        RefreshWeather();
 
                         _timeDayNightCyclePanel.isVisible = !ModUtils.GetDayNightCycleInOptionsGameplayPanel();
                         _weatherDynamicWeatherPanel.isVisible = !ModUtils.GetDynamicWeatherInOptionsGameplayPanel();
@@ -165,8 +170,12 @@ namespace PlayIt.Panels
                 DestroyGameObject(_weatherDynamicWeatherPanel);
                 DestroyGameObject(_weatherDynamicWeatherLabel);
                 DestroyGameObject(_weatherDynamicWeatherButton);
+
+                DestroyGameObject(_advancedTimeTitle);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
+                DestroyGameObject(_advancedPauseDayNightCycleOnSimulationPauseCheckBox);
+                DestroyGameObject(_advancedWeatherTitle);
                 DestroyGameObject(_advancedLockRainIntensityCheckBox);
                 DestroyGameObject(_advancedLockFogIntensityCheckBox);
                 DestroyGameObject(_advancedLockCloudIntensityCheckBox);
@@ -512,6 +521,9 @@ namespace PlayIt.Panels
                     panel.autoLayoutPadding.top = 0;
                     panel.autoLayoutPadding.bottom = 10;
 
+                    _advancedTimeTitle = UIUtils.CreateTitle(panel, "AdvancedTimeTitle", "Time");
+                    _advancedTimeTitle.tooltip = "Advanced options for Time";
+
                     _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(panel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
                     _advancedTimeConventionDropDownLabel.tooltip = "Set the convention of time to either 12 or 24-hours clock";
 
@@ -524,8 +536,19 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockRainIntensityCheckBox", _ingameAtlas, "Rain Intensity locked", ModConfig.Instance.LockRainIntensity);
-                    _advancedLockRainIntensityCheckBox.tooltip = "Set intensity of rain to never increase or decrease";
+                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
+                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set whether day/night cycle should be automatically paused when simulation pauses";
+                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.PauseDayNightCycleOnSimulationPause = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedWeatherTitle = UIUtils.CreateTitle(panel, "AdvancedWeatherTitle", "Weather");
+                    _advancedWeatherTitle.tooltip = "Advanced options for Weather";
+
+                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockRainIntensityCheckBox", _ingameAtlas, "Rain/Snow Intensity locked", ModConfig.Instance.LockRainIntensity);
+                    _advancedLockRainIntensityCheckBox.tooltip = "Set intensity of rain or snow to never increase or decrease";
                     _advancedLockRainIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
                         ModConfig.Instance.LockRainIntensity = value;
@@ -576,7 +599,7 @@ namespace PlayIt.Panels
             }
         }
 
-        private void UpdateGameSpeed()
+        private void RefreshGameSpeed()
         {
             try
             {
@@ -584,11 +607,11 @@ namespace PlayIt.Panels
             }
             catch (Exception e)
             {
-                Debug.Log("[Play It!] MainPanel:UpdateGameSpeed -> Exception: " + e.Message);
+                Debug.Log("[Play It!] MainPanel:RefreshGameSpeed -> Exception: " + e.Message);
             }
         }
 
-        private void UpdateTimeOfDay()
+        private void RefreshTimeOfDay()
         {
             try
             {
@@ -596,7 +619,37 @@ namespace PlayIt.Panels
             }
             catch (Exception e)
             {
-                Debug.Log("[Play It!] MainPanel:UpdateTimeOfDay -> Exception: " + e.Message);
+                Debug.Log("[Play It!] MainPanel:RefreshTimeOfDay -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshWeather()
+        {
+            try
+            {
+                if (!ModConfig.Instance.LockRainIntensity)
+                {
+                    _weatherRainIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentRain;
+                }
+
+                if (!ModConfig.Instance.LockFogIntensity)
+                {
+                    _weatherFogIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentFog;
+                }
+
+                if (!ModConfig.Instance.LockCloudIntensity)
+                {
+                    _weatherCloudIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentCloud;
+                }
+
+                if (!ModConfig.Instance.LockNorthernLightsIntensity)
+                {
+                    _weatherNorthernLightsIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentNorthernLights;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:RefreshWeather -> Exception: " + e.Message);
             }
         }
 
@@ -609,19 +662,11 @@ namespace PlayIt.Panels
                     Singleton<WeatherManager>.instance.m_currentRain = _weatherRainIntensitySlider.value;
                     Singleton<WeatherManager>.instance.m_targetRain = _weatherRainIntensitySlider.value;
                 }
-                else
-                {
-                    _weatherRainIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentRain;
-                }
 
                 if (ModConfig.Instance.LockFogIntensity)
                 {
                     Singleton<WeatherManager>.instance.m_currentFog = _weatherFogIntensitySlider.value;
                     Singleton<WeatherManager>.instance.m_targetFog = _weatherFogIntensitySlider.value;
-                }
-                else
-                {
-                    _weatherFogIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentFog;
                 }
 
                 if (ModConfig.Instance.LockCloudIntensity)
@@ -629,19 +674,11 @@ namespace PlayIt.Panels
                     Singleton<WeatherManager>.instance.m_currentCloud = _weatherCloudIntensitySlider.value;
                     Singleton<WeatherManager>.instance.m_targetCloud = _weatherCloudIntensitySlider.value;
                 }
-                else
-                {
-                    _weatherCloudIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentCloud;
-                }
 
                 if (ModConfig.Instance.LockNorthernLightsIntensity)
                 {
                     Singleton<WeatherManager>.instance.m_currentNorthernLights = _weatherNorthernLightsIntensitySlider.value;
                     Singleton<WeatherManager>.instance.m_targetNorthernLights = _weatherNorthernLightsIntensitySlider.value;
-                }
-                else
-                {
-                    _weatherNorthernLightsIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentNorthernLights;
                 }
             }
             catch (Exception e)

@@ -79,7 +79,7 @@ namespace PlayIt
             UILabel label = parent.AddUIComponent<UILabel>();
             label.name = name;
             label.font = GetUIFont("OpenSans-Regular");
-            label.textScale = 0.8125f;
+            label.textScale = 0.875f;
             label.text = text;
             label.autoSize = false;
             label.height = 20f;
