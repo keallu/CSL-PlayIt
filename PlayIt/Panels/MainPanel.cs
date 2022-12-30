@@ -51,6 +51,7 @@ namespace PlayIt.Panels
         private UILabel _advancedTimeTitle;
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
+        private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
         private UICheckBox _advancedPauseDayNightCycleOnSimulationPauseCheckBox;
         private UILabel _advancedWeatherTitle;
         private UICheckBox _advancedLockRainIntensityCheckBox;
@@ -170,10 +171,10 @@ namespace PlayIt.Panels
                 DestroyGameObject(_weatherDynamicWeatherPanel);
                 DestroyGameObject(_weatherDynamicWeatherLabel);
                 DestroyGameObject(_weatherDynamicWeatherButton);
-
                 DestroyGameObject(_advancedTimeTitle);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
+                DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
                 DestroyGameObject(_advancedPauseDayNightCycleOnSimulationPauseCheckBox);
                 DestroyGameObject(_advancedWeatherTitle);
                 DestroyGameObject(_advancedLockRainIntensityCheckBox);
@@ -299,7 +300,7 @@ namespace PlayIt.Panels
                     _timeDayNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeDayNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayNightSpeedSliderNumeral.width - 10f, 0f);
 
-                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", _ingameAtlas, -1f, 23f, 1f, 1f, ModConfig.Instance.DayNightSpeed);
+                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", _ingameAtlas, -1f, 23f, 0.5f, 0.5f, ModConfig.Instance.DayNightSpeed);
                     _timeDayNightSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.DayNightSpeed = value;
@@ -323,7 +324,7 @@ namespace PlayIt.Panels
                     _timeTimeOfDaySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeTimeOfDaySliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeOfDaySliderNumeral.width - 10f, 0f);
 
-                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", _ingameAtlas, 0f, 24f, 0.01f, 1f, 12f);
+                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
                     _timeTimeOfDaySlider.eventValueChanged += (component, value) =>
                     {
                         if (Mathf.Abs(DayNightManager.Instance.DayTimeHour - value) > 0.1f)
@@ -534,10 +535,23 @@ namespace PlayIt.Panels
                     {
                         ModConfig.Instance.TimeConvention = value;
                         ModConfig.Instance.Save();
+
+                        _timeTimeOfDaySliderNumeral.text = FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
+                    };
+
+                    _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
+                    _advancedShowSpeedInPercentagesCheckBox.tooltip = "Set if game speed and day/night speed should be shown in percentages";
+                    _advancedShowSpeedInPercentagesCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.ShowSpeedInPercentages = value;
+                        ModConfig.Instance.Save();
+
+                        _timeGameSpeedSliderNumeral.text = FormatGameSpeed(ModConfig.Instance.GameSpeed);
+                        _timeDayNightSpeedSliderNumeral.text = FormatDayNightSpeed(ModConfig.Instance.DayNightSpeed);
                     };
 
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
-                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set whether day/night cycle should be automatically paused when simulation pauses";
+                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set if day/night cycle should be automatically paused when simulation pauses";
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox.eventCheckChanged += (component, value) =>
                     {
                         ModConfig.Instance.PauseDayNightCycleOnSimulationPause = value;
@@ -608,6 +622,18 @@ namespace PlayIt.Panels
             catch (Exception e)
             {
                 Debug.Log("[Play It!] MainPanel:RefreshGameSpeed -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshDayNightSpeed()
+        {
+            try
+            {
+                _timeDayNightSpeedSlider.value = DayNightManager.Instance.DayNightSpeed;
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:RefreshDayNightSpeed -> Exception: " + e.Message);
             }
         }
 
@@ -691,11 +717,11 @@ namespace PlayIt.Panels
         {
             if (value == 1f)
             {
-                return "Normal";
+                return ModConfig.Instance.ShowSpeedInPercentages ? "100%" : "Normal";
             }
             else
             {
-                return value.ToString() + "x";
+                return ModConfig.Instance.ShowSpeedInPercentages ? value * 100 + "%" : value.ToString() + "x";
             }
         }
 
@@ -703,15 +729,15 @@ namespace PlayIt.Panels
         {
             if (value == -1f)
             {
-                return "Paused";
+                return ModConfig.Instance.ShowSpeedInPercentages ? "0%" : "Paused";
             }
             else if (value == 0f)
             {
-                return "Normal";
+                return ModConfig.Instance.ShowSpeedInPercentages ? "100%" : "Normal";
             }
             else
             {
-                return (value + 1).ToString() + "x";
+                return ModConfig.Instance.ShowSpeedInPercentages ? (value + 1) * 100 + "%" : (value + 1).ToString() + "x";
             }
         }
 

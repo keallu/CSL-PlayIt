@@ -17,6 +17,7 @@
         public float CloudIntensity { get; set; } = 0f;
         public float NorthernLightsIntensity { get; set; } = 0f;
         public int TimeConvention { get; set; } = 1;
+        public bool ShowSpeedInPercentages{ get; set; } = false;
         public bool PauseDayNightCycleOnSimulationPause { get; set; } = false;
         public bool LockRainIntensity { get; set; } = false;
         public bool LockFogIntensity { get; set; } = false;

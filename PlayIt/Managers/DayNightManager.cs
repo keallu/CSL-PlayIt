@@ -21,6 +21,14 @@ namespace PlayIt.Managers
             }
         }
 
+        public float DayNightSpeed
+        {
+            get
+            {
+                return ModConfig.Instance.DayNightSpeed;
+            }
+        }
+
         public float DayTimeHour
         {
             get
