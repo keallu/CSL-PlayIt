@@ -11,6 +11,8 @@ namespace PlayIt.Panels
         private bool _initialized;
         private float _timer;
 
+        private UIMultiStateButton _zoomButton;
+
         private UITextureAtlas _ingameAtlas;
         private UILabel _title;
         private UIButton _close;
@@ -85,6 +87,8 @@ namespace PlayIt.Panels
                 }
 
                 _ingameAtlas = ResourceLoader.GetAtlas("Ingame");
+
+                _zoomButton = GameObject.Find("ZoomButton").GetComponent<UIMultiStateButton>();
 
                 CreateUI();
             }
@@ -592,6 +596,33 @@ namespace PlayIt.Panels
                         ModConfig.Instance.LockNorthernLightsIntensity = value;
                         ModConfig.Instance.Save();
                     };
+
+                    if (_zoomButton != null)
+                    {
+                        _zoomButton.eventMouseUp += (component, eventParam) =>
+                        {
+                            if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
+                            {
+                                Vector2 position;
+                                Vector2 center;
+                                float angle;
+                                float timeOfDay;
+
+                                component.GetHitPosition(eventParam.ray, out position);
+                                center = new Vector2(30, 30);
+                                angle = Vector2.Angle(new Vector3(0, 30), position - center);
+
+                                if (position.x > center.x)
+                                {
+                                    angle = 360.0f - angle;
+                                }
+
+                                timeOfDay = angle * 12.0f / 180.0f;
+
+                                _timeTimeOfDaySlider.value = timeOfDay;
+                            }
+                        };
+                    }
                 }
             }
             catch (Exception e)

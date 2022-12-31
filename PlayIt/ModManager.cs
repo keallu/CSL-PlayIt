@@ -20,7 +20,7 @@ namespace PlayIt
         {
             try
             {
-                
+
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace PlayIt
         public void OnDestroy()
         {
             try
-            {   
+            {
                 if (_button != null)
                 {
                     Destroy(_button.gameObject);
