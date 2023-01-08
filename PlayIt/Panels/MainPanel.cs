@@ -27,9 +27,9 @@ namespace PlayIt.Panels
         private UILabel _timeDayNightSpeedSliderLabel;
         private UILabel _timeDayNightSpeedSliderNumeral;
         private UISlider _timeDayNightSpeedSlider;
-        private UILabel _timeTimeOfDaySliderLabel;
-        private UILabel _timeTimeOfDaySliderNumeral;
-        private UISlider _timeTimeOfDaySlider;
+        private UILabel _timeTimeHourSliderLabel;
+        private UILabel _timeTimeHourSliderNumeral;
+        private UISlider _timeTimeHourSlider;
         private UIPanel _timeDayNightCyclePanel;
         private UILabel _timeDayNightCycleLabel;
         private UIButton _timeDayNightCycleButton;
@@ -154,9 +154,9 @@ namespace PlayIt.Panels
                 DestroyGameObject(_timeDayNightSpeedSliderLabel);
                 DestroyGameObject(_timeDayNightSpeedSliderNumeral);
                 DestroyGameObject(_timeDayNightSpeedSlider);
-                DestroyGameObject(_timeTimeOfDaySliderLabel);
-                DestroyGameObject(_timeTimeOfDaySliderNumeral);
-                DestroyGameObject(_timeTimeOfDaySlider);
+                DestroyGameObject(_timeTimeHourSliderLabel);
+                DestroyGameObject(_timeTimeHourSliderNumeral);
+                DestroyGameObject(_timeTimeHourSlider);
                 DestroyGameObject(_timeDayNightCyclePanel);
                 DestroyGameObject(_timeDayNightCycleLabel);
                 DestroyGameObject(_timeDayNightCycleButton);
@@ -320,29 +320,29 @@ namespace PlayIt.Panels
                         }
                     };
 
-                    _timeTimeOfDaySliderLabel = UIUtils.CreateLabel(panel, "TimeTimeOfDaySliderLabel", "Time of Day");
-                    _timeTimeOfDaySliderLabel.tooltip = "Set the time of day";
+                    _timeTimeHourSliderLabel = UIUtils.CreateLabel(panel, "TimeTimeHourSliderLabel", "Time of Day");
+                    _timeTimeHourSliderLabel.tooltip = "Set the time of day";
 
-                    _timeTimeOfDaySliderNumeral = UIUtils.CreateLabel(_timeTimeOfDaySliderLabel, "TimeTimeOfDaySliderNumeral", "12:00");
-                    _timeTimeOfDaySliderNumeral.width = 100f;
-                    _timeTimeOfDaySliderNumeral.textAlignment = UIHorizontalAlignment.Right;
-                    _timeTimeOfDaySliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeOfDaySliderNumeral.width - 10f, 0f);
+                    _timeTimeHourSliderNumeral = UIUtils.CreateLabel(_timeTimeHourSliderLabel, "TimeTimeHourSliderNumeral", "12:00");
+                    _timeTimeHourSliderNumeral.width = 100f;
+                    _timeTimeHourSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _timeTimeHourSliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeHourSliderNumeral.width - 10f, 0f);
 
-                    _timeTimeOfDaySlider = UIUtils.CreateSlider(panel, "TimeTimeOfDaySlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
-                    _timeTimeOfDaySlider.eventValueChanged += (component, value) =>
+                    _timeTimeHourSlider = UIUtils.CreateSlider(panel, "TimeTimeHourSlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
+                    _timeTimeHourSlider.eventValueChanged += (component, value) =>
                     {
                         if (Mathf.Abs(DayNightManager.Instance.DayTimeHour - value) > 0.1f)
                         {
                             DayNightManager.Instance.DayTimeHour = value;
                         }
 
-                        _timeTimeOfDaySliderNumeral.text = FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
+                        _timeTimeHourSliderNumeral.text = FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
                     };
-                    _timeTimeOfDaySlider.eventMouseUp += (component, eventParam) =>
+                    _timeTimeHourSlider.eventMouseUp += (component, eventParam) =>
                     {
                         if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
                         {
-                            _timeTimeOfDaySlider.value = 12.0f;
+                            _timeTimeHourSlider.value = 12f;
                         }
                     };
 
@@ -540,7 +540,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.TimeConvention = value;
                         ModConfig.Instance.Save();
 
-                        _timeTimeOfDaySliderNumeral.text = FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
+                        _timeTimeHourSliderNumeral.text = FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
                     };
 
                     _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
@@ -619,7 +619,7 @@ namespace PlayIt.Panels
 
                                 timeOfDay = angle * 12.0f / 180.0f;
 
-                                _timeTimeOfDaySlider.value = timeOfDay;
+                                _timeTimeHourSlider.value = timeOfDay;
                             }
                         };
                     }
@@ -672,7 +672,7 @@ namespace PlayIt.Panels
         {
             try
             {
-                _timeTimeOfDaySlider.value = DayNightManager.Instance.DayTimeHour;
+                _timeTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
             }
             catch (Exception e)
             {
@@ -774,8 +774,10 @@ namespace PlayIt.Panels
 
         private string FormatTimeOfDay(bool twelweHourConvention, float value)
         {
-            int hour = (int)Mathf.Floor(value);
-            int minute = (int)Mathf.Floor((value - hour) * 60.0f);
+            float timeOfDay = SimulationManager.Lagrange4(value, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
+
+            int hour = (int)Mathf.Floor(timeOfDay);
+            int minute = (int)Mathf.Floor((timeOfDay - hour) * 60.0f);
 
             DateTime dateTime = DateTime.Parse(string.Format("{0,2:00}:{1,2:00}", hour, minute));
 
