@@ -1,8 +1,9 @@
 ﻿using ColossalFramework;
 using ColossalFramework.UI;
+using PlayIt.Helpers;
+using PlayIt.Managers;
 using System;
 using UnityEngine;
-using PlayIt.Managers;
 
 namespace PlayIt.Panels
 {
@@ -51,6 +52,7 @@ namespace PlayIt.Panels
         private UIButton _weatherDynamicWeatherButton;
 
         private UILabel _advancedTimeTitle;
+        private UICheckBox _advancedShowIngameClockPanelCheckBox;
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
         private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
@@ -176,6 +178,7 @@ namespace PlayIt.Panels
                 DestroyGameObject(_weatherDynamicWeatherLabel);
                 DestroyGameObject(_weatherDynamicWeatherButton);
                 DestroyGameObject(_advancedTimeTitle);
+                DestroyGameObject(_advancedShowIngameClockPanelCheckBox);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
                 DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
@@ -214,7 +217,7 @@ namespace PlayIt.Panels
                 clipChildren = true;
                 isVisible = false;
                 width = 400f;
-                height = 400f;
+                height = 450f;
 
                 _title = UIUtils.CreateMenuPanelTitle(this, _ingameAtlas, "Play It!");
                 _title.relativePosition = new Vector3(width / 2f - _title.width / 2f, 15f);
@@ -280,7 +283,7 @@ namespace PlayIt.Panels
                     _timeGameSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeGameSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeGameSpeedSliderNumeral.width - 10f, 0f);
 
-                    _timeGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", _ingameAtlas, 0.1f, 3f, 0.05f, 0.05f, ModConfig.Instance.GameSpeed);
+                    _timeGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", _ingameAtlas, 0.01f, 3f, 0.01f, 0.05f, ModConfig.Instance.GameSpeed);
                     _timeGameSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.GameSpeed = value;
@@ -323,7 +326,7 @@ namespace PlayIt.Panels
                     _timeTimeHourSliderLabel = UIUtils.CreateLabel(panel, "TimeTimeHourSliderLabel", "Time of Day");
                     _timeTimeHourSliderLabel.tooltip = "Set the time of day";
 
-                    _timeTimeHourSliderNumeral = UIUtils.CreateLabel(_timeTimeHourSliderLabel, "TimeTimeHourSliderNumeral", "12:00");
+                    _timeTimeHourSliderNumeral = UIUtils.CreateLabel(_timeTimeHourSliderLabel, "TimeTimeHourSliderNumeral", "11:07");
                     _timeTimeHourSliderNumeral.width = 100f;
                     _timeTimeHourSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeTimeHourSliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeHourSliderNumeral.width - 10f, 0f);
@@ -336,7 +339,7 @@ namespace PlayIt.Panels
                             DayNightManager.Instance.DayTimeHour = value;
                         }
 
-                        _timeTimeHourSliderNumeral.text = FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
+                        _timeTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
                     };
                     _timeTimeHourSlider.eventMouseUp += (component, eventParam) =>
                     {
@@ -529,6 +532,14 @@ namespace PlayIt.Panels
                     _advancedTimeTitle = UIUtils.CreateTitle(panel, "AdvancedTimeTitle", "Time");
                     _advancedTimeTitle.tooltip = "Advanced options for Time";
 
+                    _advancedShowIngameClockPanelCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowIngameClockPanelCheckBox", _ingameAtlas, "Show In-game Clock", ModConfig.Instance.ShowClock);
+                    _advancedShowIngameClockPanelCheckBox.tooltip = "Set if in-game clock panel should be visible";
+                    _advancedShowIngameClockPanelCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.ShowClock = value;
+                        ModConfig.Instance.Save();
+                    };
+
                     _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(panel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
                     _advancedTimeConventionDropDownLabel.tooltip = "Set the convention of time to either 12 or 24-hours clock";
 
@@ -540,7 +551,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.TimeConvention = value;
                         ModConfig.Instance.Save();
 
-                        _timeTimeHourSliderNumeral.text = FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
+                        _timeTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
                     };
 
                     _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
@@ -770,18 +781,6 @@ namespace PlayIt.Panels
             {
                 return ModConfig.Instance.ShowSpeedInPercentages ? (value + 1) * 100 + "%" : (value + 1).ToString() + "x";
             }
-        }
-
-        private string FormatTimeOfDay(bool twelweHourConvention, float value)
-        {
-            float timeOfDay = SimulationManager.Lagrange4(value, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
-
-            int hour = (int)Mathf.Floor(timeOfDay);
-            int minute = (int)Mathf.Floor((timeOfDay - hour) * 60.0f);
-
-            DateTime dateTime = DateTime.Parse(string.Format("{0,2:00}:{1,2:00}", hour, minute));
-
-            return twelweHourConvention ? dateTime.ToString("hh:mm tt") : dateTime.ToString("HH:mm");
         }
     }
 }

@@ -254,7 +254,7 @@ namespace PlayIt
 
         public static UIButton CreatePanelButton(UIComponent parent, string name, UITextureAtlas atlas, string text)
         {
-            UIButton button = parent.AddUIComponent<UIButton>();            
+            UIButton button = parent.AddUIComponent<UIButton>();
             button.name = name;
             button.atlas = atlas;
 
@@ -292,7 +292,7 @@ namespace PlayIt
 
         public static UILabel CreateMenuPanelTitle(UIComponent parent, UITextureAtlas atlas, string title)
         {
-            UILabel label = parent.AddUIComponent<UILabel>();            
+            UILabel label = parent.AddUIComponent<UILabel>();
             label.name = "Title";
             label.atlas = atlas;
             label.zOrder = 1;
@@ -304,7 +304,7 @@ namespace PlayIt
 
         public static UIButton CreateMenuPanelLocationButton(UIComponent parent, UITextureAtlas atlas)
         {
-            UIButton button = parent.AddUIComponent<UIButton>();            
+            UIButton button = parent.AddUIComponent<UIButton>();
             button.name = "LocationButton";
             button.atlas = atlas;
             button.zOrder = 1;
@@ -335,7 +335,7 @@ namespace PlayIt
             UIDragHandle dragHandle = parent.AddUIComponent<UIDragHandle>();
             dragHandle.name = "DragHandle";
             dragHandle.zOrder = 2;
-            
+
             dragHandle.target = parent;
 
             return dragHandle;

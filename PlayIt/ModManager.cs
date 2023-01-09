@@ -15,6 +15,7 @@ namespace PlayIt
         private UIButton _button;
 
         private MainPanel _mainPanel;
+        private ClockPanel _clockPanel;
 
         public void Awake()
         {
@@ -35,6 +36,11 @@ namespace PlayIt
                 if (_mainPanel == null)
                 {
                     _mainPanel = GameObject.Find("PlayItMainPanel")?.GetComponent<MainPanel>();
+                }
+
+                if (_clockPanel == null)
+                {
+                    _clockPanel = GameObject.Find("PlayItClockPanel")?.GetComponent<ClockPanel>();
                 }
 
                 if (ModConfig.Instance.ButtonPositionX == 0f && ModConfig.Instance.ButtonPositionY == 0f)
@@ -60,6 +66,7 @@ namespace PlayIt
                 {
                     UpdateUI();
                     _mainPanel.ForceUpdateUI();
+                    _clockPanel.ForceUpdateUI();
 
                     _initialized = true;
                     ModConfig.Instance.ConfigUpdated = false;

@@ -10,12 +10,12 @@ namespace PlayIt
 
         public void OnEnabled()
         {
-            
+
         }
 
         public void OnDisabled()
         {
-            
+
         }
 
         public void OnSettingsUI(UIHelperBase helper)
@@ -46,6 +46,13 @@ namespace PlayIt
             group.AddButton("Reset Positioning of Button", () =>
             {
                 ModProperties.Instance.ResetButtonPosition();
+            });
+
+            group.AddSpace(10);
+
+            group.AddButton("Reset Positioning of Clock", () =>
+            {
+                ModProperties.Instance.ResetClockPosition();
             });
         }
     }

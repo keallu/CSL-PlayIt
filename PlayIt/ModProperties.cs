@@ -45,5 +45,19 @@ namespace PlayIt
                 Debug.Log("[Play It!] ModProperties:ResetPanelPosition -> Exception: " + e.Message);
             }
         }
+
+        public void ResetClockPosition()
+        {
+            try
+            {
+                ModConfig.Instance.ClockPositionX = (UIView.GetAView().GetScreenResolution().x * 0.5f) - 100f;
+                ModConfig.Instance.ClockPositionY = 75f;
+                ModConfig.Instance.Save();
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] ModProperties:ResetClockPosition -> Exception: " + e.Message);
+            }
+        }
     }
 }

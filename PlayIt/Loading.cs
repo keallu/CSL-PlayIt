@@ -11,9 +11,10 @@ namespace PlayIt
     public class Loading : LoadingExtensionBase
     {
         private GameObject _modManagerGameObject;
-        private GameObject _gameSpeedGameObject;
+        private GameObject _gameManagerGameObject;
         private GameObject _dayNightManagerGameObject;
         private GameObject _mainPanelGameObject;
+        private GameObject _clockPanelGameObject;
 
         public override void OnLevelLoaded(LoadMode mode)
         {
@@ -22,8 +23,8 @@ namespace PlayIt
                 _modManagerGameObject = new GameObject("PlayItModManager");
                 _modManagerGameObject.AddComponent<ModManager>();
 
-                _gameSpeedGameObject = new GameObject("PlayItGameManager");
-                _gameSpeedGameObject.AddComponent<GameManager>();
+                _gameManagerGameObject = new GameObject("PlayItGameManager");
+                _gameManagerGameObject.AddComponent<GameManager>();
 
                 _dayNightManagerGameObject = new GameObject("PlayItDayNightManager");
                 _dayNightManagerGameObject.AddComponent<DayNightManager>();
@@ -34,6 +35,10 @@ namespace PlayIt
                     _mainPanelGameObject = new GameObject("PlayItMainPanel");
                     _mainPanelGameObject.transform.parent = uiView.transform;
                     _mainPanelGameObject.AddComponent<MainPanel>();
+
+                    _clockPanelGameObject = new GameObject("PlayItClockPanel");
+                    _clockPanelGameObject.transform.parent = uiView.transform;
+                    _clockPanelGameObject.AddComponent<ClockPanel>();
                 }
             }
             catch (Exception e)
@@ -46,9 +51,24 @@ namespace PlayIt
         {
             try
             {
+                if (_clockPanelGameObject != null)
+                {
+                    UnityEngine.Object.Destroy(_clockPanelGameObject);
+                }
+
                 if (_mainPanelGameObject != null)
                 {
                     UnityEngine.Object.Destroy(_mainPanelGameObject);
+                }
+
+                if (_dayNightManagerGameObject != null)
+                {
+                    UnityEngine.Object.Destroy(_dayNightManagerGameObject);
+                }
+
+                if (_gameManagerGameObject != null)
+                {
+                    UnityEngine.Object.Destroy(_gameManagerGameObject);
                 }
 
                 if (_modManagerGameObject != null)
