@@ -695,25 +695,10 @@ namespace PlayIt.Panels
         {
             try
             {
-                if (!ModConfig.Instance.LockRainIntensity)
-                {
-                    _weatherRainIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentRain;
-                }
-
-                if (!ModConfig.Instance.LockFogIntensity)
-                {
-                    _weatherFogIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentFog;
-                }
-
-                if (!ModConfig.Instance.LockCloudIntensity)
-                {
-                    _weatherCloudIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentCloud;
-                }
-
-                if (!ModConfig.Instance.LockNorthernLightsIntensity)
-                {
-                    _weatherNorthernLightsIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentNorthernLights;
-                }
+                _weatherRainIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentRain;
+                _weatherFogIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentFog;
+                _weatherCloudIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentCloud;
+                _weatherNorthernLightsIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentNorthernLights;
             }
             catch (Exception e)
             {
@@ -727,26 +712,26 @@ namespace PlayIt.Panels
             {
                 if (ModConfig.Instance.LockRainIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentRain = _weatherRainIntensitySlider.value;
-                    Singleton<WeatherManager>.instance.m_targetRain = _weatherRainIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_currentRain = ModConfig.Instance.RainIntensity;
+                    Singleton<WeatherManager>.instance.m_targetRain = ModConfig.Instance.RainIntensity;
                 }
 
                 if (ModConfig.Instance.LockFogIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentFog = _weatherFogIntensitySlider.value;
-                    Singleton<WeatherManager>.instance.m_targetFog = _weatherFogIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_currentFog = ModConfig.Instance.FogIntensity;
+                    Singleton<WeatherManager>.instance.m_targetFog = ModConfig.Instance.FogIntensity;
                 }
 
                 if (ModConfig.Instance.LockCloudIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentCloud = _weatherCloudIntensitySlider.value;
-                    Singleton<WeatherManager>.instance.m_targetCloud = _weatherCloudIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_currentCloud = ModConfig.Instance.CloudIntensity;
+                    Singleton<WeatherManager>.instance.m_targetCloud = ModConfig.Instance.CloudIntensity;
                 }
 
                 if (ModConfig.Instance.LockNorthernLightsIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentNorthernLights = _weatherNorthernLightsIntensitySlider.value;
-                    Singleton<WeatherManager>.instance.m_targetNorthernLights = _weatherNorthernLightsIntensitySlider.value;
+                    Singleton<WeatherManager>.instance.m_currentNorthernLights = ModConfig.Instance.NorthernLightsIntensity;
+                    Singleton<WeatherManager>.instance.m_targetNorthernLights = ModConfig.Instance.NorthernLightsIntensity;
                 }
             }
             catch (Exception e)
