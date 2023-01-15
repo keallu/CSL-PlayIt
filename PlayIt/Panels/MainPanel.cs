@@ -90,7 +90,7 @@ namespace PlayIt.Panels
 
                 _ingameAtlas = ResourceLoader.GetAtlas("Ingame");
 
-                _zoomButton = GameObject.Find("ZoomButton").GetComponent<UIMultiStateButton>();
+                _zoomButton = GameObject.Find("ZoomButton")?.GetComponent<UIMultiStateButton>();
 
                 CreateUI();
             }
