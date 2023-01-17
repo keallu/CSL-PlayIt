@@ -28,9 +28,9 @@ namespace PlayIt.Panels
         private UILabel _timeDayNightSpeedSliderLabel;
         private UILabel _timeDayNightSpeedSliderNumeral;
         private UISlider _timeDayNightSpeedSlider;
-        private UILabel _timeTimeHourSliderLabel;
-        private UILabel _timeTimeHourSliderNumeral;
-        private UISlider _timeTimeHourSlider;
+        private UILabel _timeDayTimeHourSliderLabel;
+        private UILabel _timeDayTimeHourSliderNumeral;
+        private UISlider _timeDayTimeHourSlider;
         private UIPanel _timeDayNightCyclePanel;
         private UILabel _timeDayNightCycleLabel;
         private UIButton _timeDayNightCycleButton;
@@ -156,9 +156,9 @@ namespace PlayIt.Panels
                 DestroyGameObject(_timeDayNightSpeedSliderLabel);
                 DestroyGameObject(_timeDayNightSpeedSliderNumeral);
                 DestroyGameObject(_timeDayNightSpeedSlider);
-                DestroyGameObject(_timeTimeHourSliderLabel);
-                DestroyGameObject(_timeTimeHourSliderNumeral);
-                DestroyGameObject(_timeTimeHourSlider);
+                DestroyGameObject(_timeDayTimeHourSliderLabel);
+                DestroyGameObject(_timeDayTimeHourSliderNumeral);
+                DestroyGameObject(_timeDayTimeHourSlider);
                 DestroyGameObject(_timeDayNightCyclePanel);
                 DestroyGameObject(_timeDayNightCycleLabel);
                 DestroyGameObject(_timeDayNightCycleButton);
@@ -206,6 +206,11 @@ namespace PlayIt.Panels
         public void ForceUpdateUI()
         {
             UpdateUI();
+        }
+
+        public void ForceDayTimeHour(float dayTimeHour)
+        {
+            DayNightManager.Instance.DayTimeHour = dayTimeHour;
         }
 
         private void CreateUI()
@@ -323,29 +328,29 @@ namespace PlayIt.Panels
                         }
                     };
 
-                    _timeTimeHourSliderLabel = UIUtils.CreateLabel(panel, "TimeTimeHourSliderLabel", "Time of Day");
-                    _timeTimeHourSliderLabel.tooltip = "Set the time of day";
+                    _timeDayTimeHourSliderLabel = UIUtils.CreateLabel(panel, "TimeDayTimeHourSliderLabel", "Time of Day");
+                    _timeDayTimeHourSliderLabel.tooltip = "Set the time of day";
 
-                    _timeTimeHourSliderNumeral = UIUtils.CreateLabel(_timeTimeHourSliderLabel, "TimeTimeHourSliderNumeral", "11:07");
-                    _timeTimeHourSliderNumeral.width = 100f;
-                    _timeTimeHourSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
-                    _timeTimeHourSliderNumeral.relativePosition = new Vector3(panel.width - _timeTimeHourSliderNumeral.width - 10f, 0f);
+                    _timeDayTimeHourSliderNumeral = UIUtils.CreateLabel(_timeDayTimeHourSliderLabel, "TimeDayTimeHourSliderNumeral", "11:07");
+                    _timeDayTimeHourSliderNumeral.width = 100f;
+                    _timeDayTimeHourSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _timeDayTimeHourSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayTimeHourSliderNumeral.width - 10f, 0f);
 
-                    _timeTimeHourSlider = UIUtils.CreateSlider(panel, "TimeTimeHourSlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
-                    _timeTimeHourSlider.eventValueChanged += (component, value) =>
+                    _timeDayTimeHourSlider = UIUtils.CreateSlider(panel, "TimeDayTimeHourSlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
+                    _timeDayTimeHourSlider.eventValueChanged += (component, value) =>
                     {
                         if (Mathf.Abs(DayNightManager.Instance.DayTimeHour - value) > 0.1f)
                         {
                             DayNightManager.Instance.DayTimeHour = value;
                         }
 
-                        _timeTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
+                        _timeDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
                     };
-                    _timeTimeHourSlider.eventMouseUp += (component, eventParam) =>
+                    _timeDayTimeHourSlider.eventMouseUp += (component, eventParam) =>
                     {
                         if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
                         {
-                            _timeTimeHourSlider.value = 12f;
+                            _timeDayTimeHourSlider.value = 12f;
                         }
                     };
 
@@ -551,7 +556,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.TimeConvention = value;
                         ModConfig.Instance.Save();
 
-                        _timeTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
+                        _timeDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
                     };
 
                     _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
@@ -617,6 +622,7 @@ namespace PlayIt.Panels
                                 Vector2 position;
                                 Vector2 center;
                                 float angle;
+                                float dayTimeHour;
                                 float timeOfDay;
 
                                 component.GetHitPosition(eventParam.ray, out position);
@@ -628,9 +634,10 @@ namespace PlayIt.Panels
                                     angle = 360.0f - angle;
                                 }
 
-                                timeOfDay = angle * 12.0f / 180.0f;
+                                dayTimeHour = angle * 12.0f / 180.0f;
+                                timeOfDay = SimulationManager.Lagrange4(dayTimeHour, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
 
-                                _timeTimeHourSlider.value = timeOfDay;
+                                _timeDayTimeHourSlider.value = dayTimeHour + (dayTimeHour - timeOfDay);
                             }
                         };
                     }
@@ -683,7 +690,7 @@ namespace PlayIt.Panels
         {
             try
             {
-                _timeTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
+                _timeDayTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
             }
             catch (Exception e)
             {

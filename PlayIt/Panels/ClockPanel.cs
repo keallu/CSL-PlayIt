@@ -11,6 +11,8 @@ namespace PlayIt.Panels
         private bool _initialized;
         private float _timer;
 
+        private MainPanel _mainPanel;
+
         private UILabel _timeofDayLabel;
 
         public override void Awake()
@@ -33,6 +35,11 @@ namespace PlayIt.Panels
 
             try
             {
+                if (_mainPanel == null)
+                {
+                    _mainPanel = GameObject.Find("PlayItMainPanel")?.GetComponent<MainPanel>();
+                }
+
                 if (ModConfig.Instance.ClockPositionX == 0f && ModConfig.Instance.ClockPositionY == 0f)
                 {
                     ModProperties.Instance.ResetClockPosition();
@@ -124,6 +131,17 @@ namespace PlayIt.Panels
                         ModConfig.Instance.ClockPositionX = component.absolutePosition.x;
                         ModConfig.Instance.ClockPositionY = component.absolutePosition.y;
                         ModConfig.Instance.Save();
+                    }
+                };
+                eventDoubleClick += (component, eventParam) =>
+                {
+                    if (DayNightManager.Instance.IsNightTime())
+                    {
+                        _mainPanel.ForceDayTimeHour(12f);
+                    }
+                    else
+                    {
+                        _mainPanel.ForceDayTimeHour(0f);
                     }
                 };
 

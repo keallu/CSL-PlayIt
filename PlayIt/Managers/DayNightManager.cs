@@ -45,6 +45,11 @@ namespace PlayIt.Managers
             }
         }
 
+        public bool IsNightTime()
+        {
+            return simulationManager.m_isNightTime;
+        }
+
         public void Awake()
         {
             try
