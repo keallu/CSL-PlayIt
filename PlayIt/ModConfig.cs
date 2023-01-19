@@ -19,6 +19,7 @@
         public float FogIntensity { get; set; } = 0f;
         public float CloudIntensity { get; set; } = 0f;
         public float NorthernLightsIntensity { get; set; } = 0f;
+        public bool ShowSpeedInClockPanel { get; set; } = false;
         public int TimeConvention { get; set; } = 1;
         public bool ShowSpeedInPercentages { get; set; } = false;
         public bool PauseDayNightCycleOnSimulationPause { get; set; } = false;
@@ -26,6 +27,13 @@
         public bool LockFogIntensity { get; set; } = false;
         public bool LockCloudIntensity { get; set; } = false;
         public bool LockNorthernLightsIntensity { get; set; } = false;
+        public bool KeymappingsEnabled { get; set; } = false;
+        public int KeymappingsIncreaseGameSpeed { get; set; } = 0;
+        public int KeymappingsDecreaseGameSpeed { get; set; } = 0;
+        public int KeymappingsIncreaseDayNightSpeed { get; set; } = 0;
+        public int KeymappingsDecreaseDayNightSpeed { get; set; } = 0;
+        public int KeymappingsForwardTimeOfDay { get; set; } = 0;
+        public int KeymappingsBackwardTimeOfDay { get; set; } = 0;
 
         private static ModConfig instance;
 

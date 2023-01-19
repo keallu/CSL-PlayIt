@@ -14,6 +14,8 @@ namespace PlayIt.Panels
         private MainPanel _mainPanel;
 
         private UILabel _timeofDayLabel;
+        private UILabel _gameSpeedLabel;
+        private UILabel _dayNightSpeedLabel;
 
         public override void Awake()
         {
@@ -75,6 +77,12 @@ namespace PlayIt.Panels
                     if (isVisible)
                     {
                         RefreshTimeOfDay();
+
+                        if (ModConfig.Instance.ShowSpeedInClockPanel)
+                        {
+                            RefreshGameSpeed();
+                            RefreshDayNightSpeed();
+                        }
                     }
                 }
             }
@@ -91,6 +99,8 @@ namespace PlayIt.Panels
             try
             {
                 DestroyGameObject(_timeofDayLabel);
+                DestroyGameObject(_gameSpeedLabel);
+                DestroyGameObject(_dayNightSpeedLabel);
             }
             catch (Exception e)
             {
@@ -119,7 +129,7 @@ namespace PlayIt.Panels
                 zOrder = 25;
                 isVisible = false;
                 width = 160f;
-                height = 50f;
+                height = 70f;
 
                 eventMouseMove += (component, eventParam) =>
                 {
@@ -135,7 +145,7 @@ namespace PlayIt.Panels
                 };
                 eventDoubleClick += (component, eventParam) =>
                 {
-                    if (DayNightManager.Instance.IsNightTime())
+                    if (DayNightManager.Instance.IsNightTime() || DayNightManager.Instance.DayTimeHour == 0f)
                     {
                         _mainPanel.ForceDayTimeHour(12f);
                     }
@@ -150,7 +160,21 @@ namespace PlayIt.Panels
                 _timeofDayLabel.textAlignment = UIHorizontalAlignment.Center;
                 _timeofDayLabel.width = 144f;
                 _timeofDayLabel.height = 42f;
-                _timeofDayLabel.relativePosition = new Vector3((width - _timeofDayLabel.width) / 2f, (height - _timeofDayLabel.height) / 2f);
+                _timeofDayLabel.relativePosition = new Vector3((width - _timeofDayLabel.width) / 2f, (height - _timeofDayLabel.height) / 4f);
+
+                _gameSpeedLabel = UIUtils.CreateLabel(this, "GameSpeedLabel", "1x");
+                _gameSpeedLabel.textScale = 0.75f;
+                _gameSpeedLabel.textAlignment = UIHorizontalAlignment.Center;
+                _gameSpeedLabel.width = 72f;
+                _gameSpeedLabel.height = 21f;
+                _gameSpeedLabel.relativePosition = new Vector3((width - _gameSpeedLabel.width) * 0.2f, height - 29f);
+
+                _dayNightSpeedLabel = UIUtils.CreateLabel(this, "DayNightSpeedLabel", "1x");
+                _dayNightSpeedLabel.textScale = 0.75f;
+                _dayNightSpeedLabel.textAlignment = UIHorizontalAlignment.Center;
+                _dayNightSpeedLabel.width = 72f;
+                _dayNightSpeedLabel.height = 21f;
+                _dayNightSpeedLabel.relativePosition = new Vector3((width - _dayNightSpeedLabel.width) * 0.8f, height - 29f);
             }
             catch (Exception e)
             {
@@ -164,6 +188,8 @@ namespace PlayIt.Panels
             {
                 isVisible = ModConfig.Instance.ShowClock;
                 absolutePosition = new Vector3(ModConfig.Instance.ClockPositionX, ModConfig.Instance.ClockPositionY);
+                _gameSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
+                _dayNightSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
             }
             catch (Exception e)
             {
@@ -180,6 +206,30 @@ namespace PlayIt.Panels
             catch (Exception e)
             {
                 Debug.Log("[Play It!] ClockPanel:RefreshTimeOfDay -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshGameSpeed()
+        {
+            try
+            {
+                _gameSpeedLabel.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] ClockPanel:RefreshGameSpeed -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshDayNightSpeed()
+        {
+            try
+            {
+                _dayNightSpeedLabel.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] ClockPanel:RefreshDayNightSpeed -> Exception: " + e.Message);
             }
         }
     }

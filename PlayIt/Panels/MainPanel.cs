@@ -51,17 +51,38 @@ namespace PlayIt.Panels
         private UILabel _weatherDynamicWeatherLabel;
         private UIButton _weatherDynamicWeatherButton;
 
+        private UIScrollablePanel _advancedScrollablePanel;
+        private UIScrollbar _advancedScrollbar;
+        private UISlicedSprite _advancedScrollbarTrack;
+        private UISlicedSprite _advancedScrollbarThumb;
         private UILabel _advancedTimeTitle;
         private UICheckBox _advancedShowIngameClockPanelCheckBox;
+        private UICheckBox _advancedShowSpeedInClockPanelCheckBox;
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
         private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
         private UICheckBox _advancedPauseDayNightCycleOnSimulationPauseCheckBox;
+        private UISprite _advancedTimeDivider;
         private UILabel _advancedWeatherTitle;
         private UICheckBox _advancedLockRainIntensityCheckBox;
         private UICheckBox _advancedLockFogIntensityCheckBox;
         private UICheckBox _advancedLockCloudIntensityCheckBox;
         private UICheckBox _advancedLockNorthernLightsIntensityCheckBox;
+        private UISprite _advancedWeatherDivider;
+        private UILabel _advancedKeymappingsTitle;
+        private UICheckBox _advancedKeymappingsEnabledCheckBox;
+        private UILabel _advancedKeymappingsIncreaseGameSpeedDropDownLabel;
+        private UIDropDown _advancedKeymappingsIncreaseGameSpeedDropDown;
+        private UILabel _advancedKeymappingsDecreaseGameSpeedDropDownLabel;
+        private UIDropDown _advancedKeymappingsDecreaseGameSpeedDropDown;
+        private UILabel _advancedKeymappingsIncreaseDayNightSpeedDropDownLabel;
+        private UIDropDown _advancedKeymappingsIncreaseDayNightSpeedDropDown;
+        private UILabel _advancedKeymappingsDecreaseDayNightSpeedDropDownLabel;
+        private UIDropDown _advancedKeymappingsDecreaseDayNightSpeedDropDown;
+        private UILabel _advancedKeymappingsForwardTimeOfDayDropDownLabel;
+        private UIDropDown _advancedKeymappingsForwardTimeOfDayDropDown;
+        private UILabel _advancedKeymappingsBackwardTimeOfDayDropDownLabel;
+        private UIDropDown _advancedKeymappingsBackwardTimeOfDayDropDown;
 
         public override void Awake()
         {
@@ -124,11 +145,45 @@ namespace PlayIt.Panels
                     if (isVisible)
                     {
                         RefreshGameSpeed();
+                        RefreshDayNightSpeed();
                         RefreshTimeOfDay();
                         RefreshWeather();
 
                         _timeDayNightCyclePanel.isVisible = !ModUtils.GetDayNightCycleInOptionsGameplayPanel();
                         _weatherDynamicWeatherPanel.isVisible = !ModUtils.GetDynamicWeatherInOptionsGameplayPanel();
+                    }
+                }
+
+                if (ModConfig.Instance.KeymappingsEnabled && KeyChecker.GetKeyCombo(out int key))
+                {
+                    if (ModConfig.Instance.KeymappingsIncreaseGameSpeed == key && _timeGameSpeedSlider.value <= 2.95f)
+                    {
+                        _timeGameSpeedSlider.value = _timeGameSpeedSlider.value + 0.05f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsDecreaseGameSpeed == key && _timeGameSpeedSlider.value >= 0.06f)
+                    {
+                        _timeGameSpeedSlider.value = _timeGameSpeedSlider.value - 0.05f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsIncreaseDayNightSpeed == key && _timeDayNightSpeedSlider.value <= 22.95f)
+                    {
+                        _timeDayNightSpeedSlider.value = _timeDayNightSpeedSlider.value + 0.5f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsDecreaseDayNightSpeed == key && _timeDayNightSpeedSlider.value >= -0.95f)
+                    {
+                        _timeDayNightSpeedSlider.value = ModConfig.Instance.DayNightSpeed - 0.5f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsForwardTimeOfDay == key && _timeDayTimeHourSlider.value <= 22.99f)
+                    {
+                        _timeDayTimeHourSlider.value = _timeDayTimeHourSlider.value + 1f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsBackwardTimeOfDay == key && _timeDayTimeHourSlider.value >= 1f)
+                    {
+                        _timeDayTimeHourSlider.value = _timeDayTimeHourSlider.value - 1f;
                     }
                 }
             }
@@ -177,17 +232,39 @@ namespace PlayIt.Panels
                 DestroyGameObject(_weatherDynamicWeatherPanel);
                 DestroyGameObject(_weatherDynamicWeatherLabel);
                 DestroyGameObject(_weatherDynamicWeatherButton);
+                DestroyGameObject(_advancedScrollablePanel);
+                DestroyGameObject(_advancedScrollbar);
+                DestroyGameObject(_advancedScrollbarTrack);
+                DestroyGameObject(_advancedScrollbarThumb);
                 DestroyGameObject(_advancedTimeTitle);
                 DestroyGameObject(_advancedShowIngameClockPanelCheckBox);
+                DestroyGameObject(_advancedShowSpeedInClockPanelCheckBox);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
                 DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
                 DestroyGameObject(_advancedPauseDayNightCycleOnSimulationPauseCheckBox);
+                DestroyGameObject(_advancedTimeDivider);
                 DestroyGameObject(_advancedWeatherTitle);
                 DestroyGameObject(_advancedLockRainIntensityCheckBox);
                 DestroyGameObject(_advancedLockFogIntensityCheckBox);
                 DestroyGameObject(_advancedLockCloudIntensityCheckBox);
                 DestroyGameObject(_advancedLockNorthernLightsIntensityCheckBox);
+                DestroyGameObject(_advancedWeatherDivider);
+                DestroyGameObject(_advancedKeymappingsTitle);
+                DestroyGameObject(_advancedKeymappingsEnabledCheckBox);
+                DestroyGameObject(_advancedKeymappingsIncreaseGameSpeedDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsIncreaseGameSpeedDropDown);
+                DestroyGameObject(_advancedKeymappingsDecreaseGameSpeedDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsDecreaseGameSpeedDropDown);
+                DestroyGameObject(_advancedKeymappingsIncreaseDayNightSpeedDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsIncreaseDayNightSpeedDropDown);
+                DestroyGameObject(_advancedKeymappingsDecreaseDayNightSpeedDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsDecreaseDayNightSpeedDropDown);
+                DestroyGameObject(_advancedKeymappingsForwardTimeOfDayDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsForwardTimeOfDayDropDown);
+                DestroyGameObject(_advancedKeymappingsBackwardTimeOfDayDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsBackwardTimeOfDayDropDown);
+
             }
             catch (Exception e)
             {
@@ -222,7 +299,7 @@ namespace PlayIt.Panels
                 clipChildren = true;
                 isVisible = false;
                 width = 400f;
-                height = 450f;
+                height = 400f;
 
                 _title = UIUtils.CreateMenuPanelTitle(this, _ingameAtlas, "Play It!");
                 _title.relativePosition = new Vector3(width / 2f - _title.width / 2f, 15f);
@@ -283,7 +360,7 @@ namespace PlayIt.Panels
                     _timeGameSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeGameSpeedSliderLabel", "Game Speed");
                     _timeGameSpeedSliderLabel.tooltip = "Set the speed at which the game passes";
 
-                    _timeGameSpeedSliderNumeral = UIUtils.CreateLabel(_timeGameSpeedSliderLabel, "TimeGameSpeedSliderNumeral", FormatGameSpeed(ModConfig.Instance.GameSpeed));
+                    _timeGameSpeedSliderNumeral = UIUtils.CreateLabel(_timeGameSpeedSliderLabel, "TimeGameSpeedSliderNumeral", SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed));
                     _timeGameSpeedSliderNumeral.width = 100f;
                     _timeGameSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeGameSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeGameSpeedSliderNumeral.width - 10f, 0f);
@@ -294,7 +371,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.GameSpeed = value;
                         ModConfig.Instance.Save();
 
-                        _timeGameSpeedSliderNumeral.text = FormatGameSpeed(value);
+                        _timeGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
                     };
                     _timeGameSpeedSlider.eventMouseUp += (component, eventParam) =>
                     {
@@ -307,7 +384,7 @@ namespace PlayIt.Panels
                     _timeDayNightSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeDayNightSpeedSliderLabel", "Day/Night Speed");
                     _timeDayNightSpeedSliderLabel.tooltip = "Set the speed of the day/night cycle";
 
-                    _timeDayNightSpeedSliderNumeral = UIUtils.CreateLabel(_timeDayNightSpeedSliderLabel, "TimeDayNightSpeedSliderNumeral", FormatDayNightSpeed(ModConfig.Instance.DayNightSpeed));
+                    _timeDayNightSpeedSliderNumeral = UIUtils.CreateLabel(_timeDayNightSpeedSliderLabel, "TimeDayNightSpeedSliderNumeral", SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed));
                     _timeDayNightSpeedSliderNumeral.width = 100f;
                     _timeDayNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                     _timeDayNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayNightSpeedSliderNumeral.width - 10f, 0f);
@@ -318,7 +395,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.DayNightSpeed = value;
                         ModConfig.Instance.Save();
 
-                        _timeDayNightSpeedSliderNumeral.text = FormatDayNightSpeed(value);
+                        _timeDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
                     };
                     _timeDayNightSpeedSlider.eventMouseUp += (component, eventParam) =>
                     {
@@ -526,18 +603,50 @@ namespace PlayIt.Panels
 
                 if (panel != null)
                 {
-                    panel.autoLayout = true;
-                    panel.autoLayoutStart = LayoutStart.TopLeft;
-                    panel.autoLayoutDirection = LayoutDirection.Vertical;
-                    panel.autoLayoutPadding.left = 5;
-                    panel.autoLayoutPadding.right = 0;
-                    panel.autoLayoutPadding.top = 0;
-                    panel.autoLayoutPadding.bottom = 10;
+                    _advancedScrollablePanel = UIUtils.CreateScrollablePanel(panel, "AdvancedScrollablePanel");
+                    _advancedScrollablePanel.width = panel.width - 25f;
+                    _advancedScrollablePanel.height = panel.height;
+                    _advancedScrollablePanel.relativePosition = new Vector3(0f, 0f);
 
-                    _advancedTimeTitle = UIUtils.CreateTitle(panel, "AdvancedTimeTitle", "Time");
+                    _advancedScrollablePanel.autoLayout = true;
+                    _advancedScrollablePanel.autoLayoutStart = LayoutStart.TopLeft;
+                    _advancedScrollablePanel.autoLayoutDirection = LayoutDirection.Vertical;
+                    _advancedScrollablePanel.autoLayoutPadding.left = 5;
+                    _advancedScrollablePanel.autoLayoutPadding.right = 0;
+                    _advancedScrollablePanel.autoLayoutPadding.top = 0;
+                    _advancedScrollablePanel.autoLayoutPadding.bottom = 10;
+                    _advancedScrollablePanel.scrollWheelDirection = UIOrientation.Vertical;
+                    _advancedScrollablePanel.builtinKeyNavigation = true;
+                    _advancedScrollablePanel.clipChildren = true;
+
+                    _advancedScrollbar = UIUtils.CreateScrollbar(panel, "AdvancedScrollbar");
+                    _advancedScrollbar.width = 20f;
+                    _advancedScrollbar.height = _advancedScrollablePanel.height;
+                    _advancedScrollbar.relativePosition = new Vector3(panel.width - 20f, 0f);
+                    _advancedScrollbar.orientation = UIOrientation.Vertical;
+                    _advancedScrollbar.incrementAmount = 38f;
+
+                    _advancedScrollbarTrack = UIUtils.CreateSlicedSprite(_advancedScrollbar, "AdvancedScrollbarTrack");
+                    _advancedScrollbarTrack.width = _advancedScrollbar.width;
+                    _advancedScrollbarTrack.height = _advancedScrollbar.height;
+                    _advancedScrollbarTrack.relativePosition = new Vector3(0f, 0f);
+                    _advancedScrollbarTrack.spriteName = "ScrollbarTrack";
+                    _advancedScrollbarTrack.fillDirection = UIFillDirection.Vertical;
+
+                    _advancedScrollbarThumb = UIUtils.CreateSlicedSprite(_advancedScrollbar, "AdvancedScrollbarThumb");
+                    _advancedScrollbarThumb.width = _advancedScrollbar.width - 5f;
+                    _advancedScrollbarThumb.relativePosition = new Vector3(2.5f, 0f);
+                    _advancedScrollbarThumb.spriteName = "ScrollbarThumb";
+                    _advancedScrollbarThumb.fillDirection = UIFillDirection.Vertical;
+
+                    _advancedScrollablePanel.verticalScrollbar = _advancedScrollbar;
+                    _advancedScrollbar.trackObject = _advancedScrollbarTrack;
+                    _advancedScrollbar.thumbObject = _advancedScrollbarThumb;
+
+                    _advancedTimeTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedTimeTitle", "Time");
                     _advancedTimeTitle.tooltip = "Advanced options for Time";
 
-                    _advancedShowIngameClockPanelCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowIngameClockPanelCheckBox", _ingameAtlas, "Show In-game Clock", ModConfig.Instance.ShowClock);
+                    _advancedShowIngameClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowIngameClockPanelCheckBox", _ingameAtlas, "Show In-game Clock", ModConfig.Instance.ShowClock);
                     _advancedShowIngameClockPanelCheckBox.tooltip = "Set if in-game clock panel should be visible";
                     _advancedShowIngameClockPanelCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -545,10 +654,18 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(panel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
+                    _advancedShowSpeedInClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedInClockPanelCheckBox", _ingameAtlas, "Show Game and Day/Night Speed", ModConfig.Instance.ShowSpeedInClockPanel);
+                    _advancedShowSpeedInClockPanelCheckBox.tooltip = "Set if in-game clock panel should show game and day/night speed";
+                    _advancedShowSpeedInClockPanelCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.ShowSpeedInClockPanel = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
                     _advancedTimeConventionDropDownLabel.tooltip = "Set the convention of time to either 12 or 24-hours clock";
 
-                    _advancedTimeConventionDropDown = UIUtils.CreateDropDown(panel, "AdvancedTimeConventionDropDown", _ingameAtlas);
+                    _advancedTimeConventionDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedTimeConventionDropDown", _ingameAtlas);
                     _advancedTimeConventionDropDown.items = ModInvariables.TimeConvention;
                     _advancedTimeConventionDropDown.selectedIndex = ModConfig.Instance.TimeConvention;
                     _advancedTimeConventionDropDown.eventSelectedIndexChanged += (component, value) =>
@@ -559,18 +676,18 @@ namespace PlayIt.Panels
                         _timeDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
                     };
 
-                    _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
+                    _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
                     _advancedShowSpeedInPercentagesCheckBox.tooltip = "Set if game speed and day/night speed should be shown in percentages";
                     _advancedShowSpeedInPercentagesCheckBox.eventCheckChanged += (component, value) =>
                     {
                         ModConfig.Instance.ShowSpeedInPercentages = value;
                         ModConfig.Instance.Save();
 
-                        _timeGameSpeedSliderNumeral.text = FormatGameSpeed(ModConfig.Instance.GameSpeed);
-                        _timeDayNightSpeedSliderNumeral.text = FormatDayNightSpeed(ModConfig.Instance.DayNightSpeed);
+                        _timeGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed);
+                        _timeDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed);
                     };
 
-                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
+                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set if day/night cycle should be automatically paused when simulation pauses";
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -578,10 +695,12 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedWeatherTitle = UIUtils.CreateTitle(panel, "AdvancedWeatherTitle", "Weather");
+                    _advancedTimeDivider = UIUtils.CreateDivider(_advancedScrollablePanel, "AdvancedTimeDivider", _ingameAtlas);
+
+                    _advancedWeatherTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedWeatherTitle", "Weather");
                     _advancedWeatherTitle.tooltip = "Advanced options for Weather";
 
-                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockRainIntensityCheckBox", _ingameAtlas, "Rain/Snow Intensity locked", ModConfig.Instance.LockRainIntensity);
+                    _advancedLockRainIntensityCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedLockRainIntensityCheckBox", _ingameAtlas, "Rain/Snow Intensity locked", ModConfig.Instance.LockRainIntensity);
                     _advancedLockRainIntensityCheckBox.tooltip = "Set intensity of rain or snow to never increase or decrease";
                     _advancedLockRainIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -589,7 +708,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockFogIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockFogIntensityCheckBox", _ingameAtlas, "Fog Intensity locked", ModConfig.Instance.LockFogIntensity);
+                    _advancedLockFogIntensityCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedLockFogIntensityCheckBox", _ingameAtlas, "Fog Intensity locked", ModConfig.Instance.LockFogIntensity);
                     _advancedLockFogIntensityCheckBox.tooltip = "Set intensity of fog to never increase or decrease";
                     _advancedLockFogIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -597,7 +716,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockCloudIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockCloudIntensityCheckBox", _ingameAtlas, "Cloud Intensity locked", ModConfig.Instance.LockCloudIntensity);
+                    _advancedLockCloudIntensityCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedLockCloudIntensityCheckBox", _ingameAtlas, "Cloud Intensity locked", ModConfig.Instance.LockCloudIntensity);
                     _advancedLockCloudIntensityCheckBox.tooltip = "Set intensity of cloud to never increase or decrease";
                     _advancedLockCloudIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
@@ -605,11 +724,96 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedLockNorthernLightsIntensityCheckBox = UIUtils.CreateCheckBox(panel, "AdvancedLockNorthernLightsIntensityCheckBox", _ingameAtlas, "Northern Lights Intensity locked", ModConfig.Instance.LockNorthernLightsIntensity);
+                    _advancedLockNorthernLightsIntensityCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedLockNorthernLightsIntensityCheckBox", _ingameAtlas, "Northern Lights Intensity locked", ModConfig.Instance.LockNorthernLightsIntensity);
                     _advancedLockNorthernLightsIntensityCheckBox.tooltip = "Set intensity of northern lights to never increase or decrease";
                     _advancedLockNorthernLightsIntensityCheckBox.eventCheckChanged += (component, value) =>
                     {
                         ModConfig.Instance.LockNorthernLightsIntensity = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedWeatherDivider = UIUtils.CreateDivider(_advancedScrollablePanel, "AdvancedWeatherDivider", _ingameAtlas);
+
+                    _advancedKeymappingsTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedKeymappingsTitle", "Keymappings");
+                    _advancedKeymappingsTitle.tooltip = "Advanced options for Keymappings";
+
+                    _advancedKeymappingsEnabledCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedKeymappingsEnabledCheckBox", _ingameAtlas, "Keymappings Enabled", ModConfig.Instance.KeymappingsEnabled);
+                    _advancedKeymappingsEnabledCheckBox.tooltip = "Set if keymappings should be enabled";
+                    _advancedKeymappingsEnabledCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsEnabled = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsIncreaseGameSpeedDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseGameSpeedDropDownLabel", "Increase Game Speed");
+                    _advancedKeymappingsIncreaseGameSpeedDropDownLabel.tooltip = "Set the keymapping for increasing game speed";
+
+                    _advancedKeymappingsIncreaseGameSpeedDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseGameSpeedDropDown", _ingameAtlas);
+                    _advancedKeymappingsIncreaseGameSpeedDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsIncreaseGameSpeedDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseGameSpeed;
+                    _advancedKeymappingsIncreaseGameSpeedDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsIncreaseGameSpeed = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsDecreaseGameSpeedDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseGameSpeedDropDownLabel", "Decrease Game Speed");
+                    _advancedKeymappingsDecreaseGameSpeedDropDownLabel.tooltip = "Set the keymapping for decreasing game speed";
+
+                    _advancedKeymappingsDecreaseGameSpeedDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseGameSpeedDropDown", _ingameAtlas);
+                    _advancedKeymappingsDecreaseGameSpeedDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsDecreaseGameSpeedDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseGameSpeed;
+                    _advancedKeymappingsDecreaseGameSpeedDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsDecreaseGameSpeed = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsIncreaseDayNightSpeedDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseDayNightSpeedDropDownLabel", "Increase Day/Night Speed");
+                    _advancedKeymappingsIncreaseDayNightSpeedDropDownLabel.tooltip = "Set the keymapping for increasing day/night speed";
+
+                    _advancedKeymappingsIncreaseDayNightSpeedDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseDayNightSpeedDropDown", _ingameAtlas);
+                    _advancedKeymappingsIncreaseDayNightSpeedDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsIncreaseDayNightSpeedDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseDayNightSpeed;
+                    _advancedKeymappingsIncreaseDayNightSpeedDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsIncreaseDayNightSpeed = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsDecreaseDayNightSpeedDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseDayNightSpeedDropDownLabel", "Decrease Day/Night Speed");
+                    _advancedKeymappingsDecreaseDayNightSpeedDropDownLabel.tooltip = "Set the keymapping for decreasing day/night speed";
+
+                    _advancedKeymappingsDecreaseDayNightSpeedDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseDayNightSpeedDropDown", _ingameAtlas);
+                    _advancedKeymappingsDecreaseDayNightSpeedDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsDecreaseDayNightSpeedDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseDayNightSpeed;
+                    _advancedKeymappingsDecreaseDayNightSpeedDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsDecreaseDayNightSpeed = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsForwardTimeOfDayDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsForwardTimeOfDayDropDownLabel", "Forward Time of Day");
+                    _advancedKeymappingsForwardTimeOfDayDropDownLabel.tooltip = "Set the keymapping for forwarding time of day";
+
+                    _advancedKeymappingsForwardTimeOfDayDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsForwardTimeOfDayDropDown", _ingameAtlas);
+                    _advancedKeymappingsForwardTimeOfDayDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsForwardTimeOfDayDropDown.selectedIndex = ModConfig.Instance.KeymappingsForwardTimeOfDay;
+                    _advancedKeymappingsForwardTimeOfDayDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsForwardTimeOfDay = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsBackwardTimeOfDayDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsBackwardTimeOfDayDropDownLabel", "Backward Time of Day");
+                    _advancedKeymappingsBackwardTimeOfDayDropDownLabel.tooltip = "Set the keymapping for backwarding time of day";
+
+                    _advancedKeymappingsBackwardTimeOfDayDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseTimeOfDayDropDown", _ingameAtlas);
+                    _advancedKeymappingsBackwardTimeOfDayDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsBackwardTimeOfDayDropDown.selectedIndex = ModConfig.Instance.KeymappingsBackwardTimeOfDay;
+                    _advancedKeymappingsBackwardTimeOfDayDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsBackwardTimeOfDay = value;
                         ModConfig.Instance.Save();
                     };
 
@@ -666,7 +870,10 @@ namespace PlayIt.Panels
         {
             try
             {
-                _timeGameSpeedSlider.value = GameManager.Instance.GameSpeed;
+                if (_timeGameSpeedSlider.value != GameManager.Instance.GameSpeed)
+                {
+                    _timeGameSpeedSlider.value = GameManager.Instance.GameSpeed;
+                }
             }
             catch (Exception e)
             {
@@ -678,7 +885,10 @@ namespace PlayIt.Panels
         {
             try
             {
-                _timeDayNightSpeedSlider.value = DayNightManager.Instance.DayNightSpeed;
+                if (_timeDayNightSpeedSlider.value != DayNightManager.Instance.DayNightSpeed)
+                {
+                    _timeDayNightSpeedSlider.value = DayNightManager.Instance.DayNightSpeed;
+                }
             }
             catch (Exception e)
             {
@@ -690,7 +900,10 @@ namespace PlayIt.Panels
         {
             try
             {
-                _timeDayTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
+                if (_timeDayTimeHourSlider.value != DayNightManager.Instance.DayTimeHour)
+                {
+                    _timeDayTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
+                }
             }
             catch (Exception e)
             {
@@ -744,34 +957,6 @@ namespace PlayIt.Panels
             catch (Exception e)
             {
                 Debug.Log("[Play It!] MainPanel:UpdateWeather -> Exception: " + e.Message);
-            }
-        }
-
-        private string FormatGameSpeed(float value)
-        {
-            if (value == 1f)
-            {
-                return ModConfig.Instance.ShowSpeedInPercentages ? "100%" : "Normal";
-            }
-            else
-            {
-                return ModConfig.Instance.ShowSpeedInPercentages ? value * 100 + "%" : value.ToString() + "x";
-            }
-        }
-
-        private string FormatDayNightSpeed(float value)
-        {
-            if (value == -1f)
-            {
-                return ModConfig.Instance.ShowSpeedInPercentages ? "0%" : "Paused";
-            }
-            else if (value == 0f)
-            {
-                return ModConfig.Instance.ShowSpeedInPercentages ? "100%" : "Normal";
-            }
-            else
-            {
-                return ModConfig.Instance.ShowSpeedInPercentages ? (value + 1) * 100 + "%" : (value + 1).ToString() + "x";
             }
         }
     }

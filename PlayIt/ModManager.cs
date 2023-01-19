@@ -1,8 +1,9 @@
 ﻿using ColossalFramework;
 using ColossalFramework.UI;
+using PlayIt.Managers;
+using PlayIt.Panels;
 using System;
 using UnityEngine;
-using PlayIt.Panels;
 
 namespace PlayIt
 {

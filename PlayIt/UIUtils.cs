@@ -144,6 +144,7 @@ namespace PlayIt
 
             dropDown.listBackground = "OptionsDropboxListbox";
             dropDown.listHeight = 200;
+            dropDown.listPosition = UIDropDown.PopupListPosition.Automatic;
 
             dropDown.itemHeight = 24;
             dropDown.itemHover = "ListItemHover";
@@ -164,6 +165,8 @@ namespace PlayIt
 
             dropDown.popupColor = new Color32(255, 255, 255, 255);
             dropDown.popupTextColor = new Color32(170, 170, 170, 255);
+
+            dropDown.builtinKeyNavigation = true;
 
             UIButton button = dropDown.AddUIComponent<UIButton>();
             button.height = dropDown.height;
@@ -187,6 +190,8 @@ namespace PlayIt
             checkBox.name = name;
             checkBox.height = 16f;
             checkBox.width = parent.width - 10f;
+
+            checkBox.builtinKeyNavigation = true;
 
             UISprite uncheckedSprite = checkBox.AddUIComponent<UISprite>();
             uncheckedSprite.atlas = atlas;
@@ -222,6 +227,8 @@ namespace PlayIt
             slider.height = 10f;
             slider.width = parent.width - 10f;
             slider.relativePosition = new Vector3(0f, 0f);
+
+            slider.builtinKeyNavigation = true;
 
             UISlicedSprite slicedSprite = slider.AddUIComponent<UISlicedSprite>();
             slicedSprite.atlas = atlas;
