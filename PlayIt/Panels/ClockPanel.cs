@@ -172,6 +172,7 @@ namespace PlayIt.Panels
                 _dayNightSpeedLabel = UIUtils.CreateLabel(this, "DayNightSpeedLabel", "1x");
                 _dayNightSpeedLabel.textScale = 0.75f;
                 _dayNightSpeedLabel.textAlignment = UIHorizontalAlignment.Center;
+
                 _dayNightSpeedLabel.width = 72f;
                 _dayNightSpeedLabel.height = 21f;
                 _dayNightSpeedLabel.relativePosition = new Vector3((width - _dayNightSpeedLabel.width) * 0.8f, height - 29f);
@@ -190,6 +191,20 @@ namespace PlayIt.Panels
                 absolutePosition = new Vector3(ModConfig.Instance.ClockPositionX, ModConfig.Instance.ClockPositionY);
                 _gameSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
                 _dayNightSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
+
+                Color32 color = GetColor(ModConfig.Instance.TextColorInClockPanel);
+                _timeofDayLabel.textColor = color;
+                _gameSpeedLabel.textColor = color;
+                _dayNightSpeedLabel.textColor = color;
+
+                _timeofDayLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
+                _gameSpeedLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
+                _dayNightSpeedLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
+
+                color = GetColor(ModConfig.Instance.OutlineColorInClockPanel);
+                _timeofDayLabel.outlineColor = color;
+                _gameSpeedLabel.outlineColor = color;
+                _dayNightSpeedLabel.outlineColor = color;
             }
             catch (Exception e)
             {
@@ -230,6 +245,33 @@ namespace PlayIt.Panels
             catch (Exception e)
             {
                 Debug.Log("[Play It!] ClockPanel:RefreshDayNightSpeed -> Exception: " + e.Message);
+            }
+        }
+
+        private Color32 GetColor(int color)
+        {
+            try
+            {
+                switch (color)
+                {
+                    case 0:
+                        return new Color32(255, 255, 255, 255);
+                    case 1:
+                        return new Color32(0, 0, 0, 255);
+                    case 2:
+                        return new Color32(255, 0, 0, 255);
+                    case 3:
+                        return new Color32(0, 255, 0, 255);
+                    case 4:
+                        return new Color32(0, 0, 255, 255);
+                    default:
+                        return new Color32(255, 255, 255, 255);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] ClockPanel:GetColor -> Exception: " + e.Message);
+                return new Color32(255, 255, 255, 255);
             }
         }
     }

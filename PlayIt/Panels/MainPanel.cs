@@ -22,18 +22,26 @@ namespace PlayIt.Panels
         private UITabContainer _tabContainer;
         private UIButton _templateButton;
 
-        private UILabel _timeGameSpeedSliderLabel;
-        private UILabel _timeGameSpeedSliderNumeral;
-        private UISlider _timeGameSpeedSlider;
-        private UILabel _timeDayNightSpeedSliderLabel;
-        private UILabel _timeDayNightSpeedSliderNumeral;
-        private UISlider _timeDayNightSpeedSlider;
-        private UILabel _timeDayTimeHourSliderLabel;
-        private UILabel _timeDayTimeHourSliderNumeral;
-        private UISlider _timeDayTimeHourSlider;
-        private UIPanel _timeDayNightCyclePanel;
-        private UILabel _timeDayNightCycleLabel;
-        private UIButton _timeDayNightCycleButton;
+        private UILabel _worldLatitudeSliderLabel;
+        private UILabel _worldLatitudeSliderNumeral;
+        private UISlider _worldLatitudeSlider;
+        private UILabel _worldLongitudeSliderLabel;
+        private UILabel _worldLongitudeSliderNumeral;
+        private UISlider _worldLongitudeSlider;
+        private UIPanel _worldMessagePanel;
+        private UILabel _worldMessageLabel;
+        private UILabel _worldGameSpeedSliderLabel;
+        private UILabel _worldGameSpeedSliderNumeral;
+        private UISlider _worldGameSpeedSlider;
+        private UILabel _worldDayNightSpeedSliderLabel;
+        private UILabel _worldDayNightSpeedSliderNumeral;
+        private UISlider _worldDayNightSpeedSlider;
+        private UILabel _worldDayTimeHourSliderLabel;
+        private UILabel _worldDayTimeHourSliderNumeral;
+        private UISlider _worldDayTimeHourSlider;
+        private UIPanel _worldDayNightCyclePanel;
+        private UILabel _worldDayNightCycleLabel;
+        private UIButton _worldDayNightCycleButton;
 
         private UILabel _weatherRainIntensitySliderLabel;
         private UILabel _weatherRainIntensitySliderNumeral;
@@ -55,9 +63,7 @@ namespace PlayIt.Panels
         private UIScrollbar _advancedScrollbar;
         private UISlicedSprite _advancedScrollbarTrack;
         private UISlicedSprite _advancedScrollbarThumb;
-        private UILabel _advancedTimeTitle;
-        private UICheckBox _advancedShowIngameClockPanelCheckBox;
-        private UICheckBox _advancedShowSpeedInClockPanelCheckBox;
+        private UILabel _advancedWorldTitle;
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
         private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
@@ -69,6 +75,15 @@ namespace PlayIt.Panels
         private UICheckBox _advancedLockCloudIntensityCheckBox;
         private UICheckBox _advancedLockNorthernLightsIntensityCheckBox;
         private UISprite _advancedWeatherDivider;
+        private UILabel _advancedClockTitle;
+        private UICheckBox _advancedShowIngameClockPanelCheckBox;
+        private UICheckBox _advancedShowSpeedInClockPanelCheckBox;
+        private UILabel _advancedTextColorInClockPanelDropDownLabel;
+        private UIDropDown _advancedTextColorInClockPanelDropDown;
+        private UICheckBox _advancedUseOutlineInClockPanelCheckBox;
+        private UILabel _advancedOutlineColorInClockPanelDropDownLabel;
+        private UIDropDown _advancedOutlineColorInClockPanelDropDown;
+        private UISprite _advancedClockDivider;
         private UILabel _advancedKeymappingsTitle;
         private UICheckBox _advancedKeymappingsEnabledCheckBox;
         private UILabel _advancedKeymappingsIncreaseGameSpeedDropDownLabel;
@@ -104,9 +119,21 @@ namespace PlayIt.Panels
 
             try
             {
+                DefaultManager.Instance.Initialize();
+
                 if (ModConfig.Instance.PanelPositionX == 0f && ModConfig.Instance.PanelPositionY == 0f)
                 {
                     ModProperties.Instance.ResetPanelPosition();
+                }
+
+                if (float.IsNaN(ModConfig.Instance.Latitude))
+                {
+                    ModConfig.Instance.Latitude = (float)DefaultManager.Instance.Get("Latitude");
+                }
+
+                if (float.IsNaN(ModConfig.Instance.Longitude))
+                {
+                    ModConfig.Instance.Longitude = (float)DefaultManager.Instance.Get("Longitude");
                 }
 
                 _ingameAtlas = ResourceLoader.GetAtlas("Ingame");
@@ -149,41 +176,41 @@ namespace PlayIt.Panels
                         RefreshTimeOfDay();
                         RefreshWeather();
 
-                        _timeDayNightCyclePanel.isVisible = !ModUtils.GetDayNightCycleInOptionsGameplayPanel();
-                        _weatherDynamicWeatherPanel.isVisible = !ModUtils.GetDynamicWeatherInOptionsGameplayPanel();
+                        _worldDayNightCyclePanel.isVisible = !GameOptionsHelper.GetDayNightCycleInOptionsGameplayPanel();
+                        _weatherDynamicWeatherPanel.isVisible = !GameOptionsHelper.GetDynamicWeatherInOptionsGameplayPanel();
                     }
                 }
 
                 if (ModConfig.Instance.KeymappingsEnabled && KeyChecker.GetKeyCombo(out int key))
                 {
-                    if (ModConfig.Instance.KeymappingsIncreaseGameSpeed == key && _timeGameSpeedSlider.value <= 2.95f)
+                    if (ModConfig.Instance.KeymappingsIncreaseGameSpeed == key && _worldGameSpeedSlider.value <= 2.95f)
                     {
-                        _timeGameSpeedSlider.value = _timeGameSpeedSlider.value + 0.05f;
+                        _worldGameSpeedSlider.value = _worldGameSpeedSlider.value + 0.05f;
                     }
 
-                    if (ModConfig.Instance.KeymappingsDecreaseGameSpeed == key && _timeGameSpeedSlider.value >= 0.06f)
+                    if (ModConfig.Instance.KeymappingsDecreaseGameSpeed == key && _worldGameSpeedSlider.value >= 0.06f)
                     {
-                        _timeGameSpeedSlider.value = _timeGameSpeedSlider.value - 0.05f;
+                        _worldGameSpeedSlider.value = _worldGameSpeedSlider.value - 0.05f;
                     }
 
-                    if (ModConfig.Instance.KeymappingsIncreaseDayNightSpeed == key && _timeDayNightSpeedSlider.value <= 22.95f)
+                    if (ModConfig.Instance.KeymappingsIncreaseDayNightSpeed == key && _worldDayNightSpeedSlider.value <= 22.95f)
                     {
-                        _timeDayNightSpeedSlider.value = _timeDayNightSpeedSlider.value + 0.5f;
+                        _worldDayNightSpeedSlider.value = _worldDayNightSpeedSlider.value + 0.5f;
                     }
 
-                    if (ModConfig.Instance.KeymappingsDecreaseDayNightSpeed == key && _timeDayNightSpeedSlider.value >= -0.95f)
+                    if (ModConfig.Instance.KeymappingsDecreaseDayNightSpeed == key && _worldDayNightSpeedSlider.value >= -0.95f)
                     {
-                        _timeDayNightSpeedSlider.value = ModConfig.Instance.DayNightSpeed - 0.5f;
+                        _worldDayNightSpeedSlider.value = ModConfig.Instance.DayNightSpeed - 0.5f;
                     }
 
-                    if (ModConfig.Instance.KeymappingsForwardTimeOfDay == key && _timeDayTimeHourSlider.value <= 22.99f)
+                    if (ModConfig.Instance.KeymappingsForwardTimeOfDay == key && _worldDayTimeHourSlider.value <= 22.99f)
                     {
-                        _timeDayTimeHourSlider.value = _timeDayTimeHourSlider.value + 1f;
+                        _worldDayTimeHourSlider.value = _worldDayTimeHourSlider.value + 1f;
                     }
 
-                    if (ModConfig.Instance.KeymappingsBackwardTimeOfDay == key && _timeDayTimeHourSlider.value >= 1f)
+                    if (ModConfig.Instance.KeymappingsBackwardTimeOfDay == key && _worldDayTimeHourSlider.value >= 1f)
                     {
-                        _timeDayTimeHourSlider.value = _timeDayTimeHourSlider.value - 1f;
+                        _worldDayTimeHourSlider.value = _worldDayTimeHourSlider.value - 1f;
                     }
                 }
             }
@@ -205,18 +232,26 @@ namespace PlayIt.Panels
                 DestroyGameObject(_tabstrip);
                 DestroyGameObject(_tabContainer);
                 DestroyGameObject(_templateButton);
-                DestroyGameObject(_timeGameSpeedSliderLabel);
-                DestroyGameObject(_timeGameSpeedSliderNumeral);
-                DestroyGameObject(_timeGameSpeedSlider);
-                DestroyGameObject(_timeDayNightSpeedSliderLabel);
-                DestroyGameObject(_timeDayNightSpeedSliderNumeral);
-                DestroyGameObject(_timeDayNightSpeedSlider);
-                DestroyGameObject(_timeDayTimeHourSliderLabel);
-                DestroyGameObject(_timeDayTimeHourSliderNumeral);
-                DestroyGameObject(_timeDayTimeHourSlider);
-                DestroyGameObject(_timeDayNightCyclePanel);
-                DestroyGameObject(_timeDayNightCycleLabel);
-                DestroyGameObject(_timeDayNightCycleButton);
+                DestroyGameObject(_worldLatitudeSliderLabel);
+                DestroyGameObject(_worldLatitudeSliderNumeral);
+                DestroyGameObject(_worldLatitudeSlider);
+                DestroyGameObject(_worldLongitudeSliderLabel);
+                DestroyGameObject(_worldLongitudeSliderNumeral);
+                DestroyGameObject(_worldLongitudeSlider);
+                DestroyGameObject(_worldMessagePanel);
+                DestroyGameObject(_worldMessageLabel);
+                DestroyGameObject(_worldGameSpeedSliderLabel);
+                DestroyGameObject(_worldGameSpeedSliderNumeral);
+                DestroyGameObject(_worldGameSpeedSlider);
+                DestroyGameObject(_worldDayNightSpeedSliderLabel);
+                DestroyGameObject(_worldDayNightSpeedSliderNumeral);
+                DestroyGameObject(_worldDayNightSpeedSlider);
+                DestroyGameObject(_worldDayTimeHourSliderLabel);
+                DestroyGameObject(_worldDayTimeHourSliderNumeral);
+                DestroyGameObject(_worldDayTimeHourSlider);
+                DestroyGameObject(_worldDayNightCyclePanel);
+                DestroyGameObject(_worldDayNightCycleLabel);
+                DestroyGameObject(_worldDayNightCycleButton);
                 DestroyGameObject(_weatherRainIntensitySliderLabel);
                 DestroyGameObject(_weatherRainIntensitySliderNumeral);
                 DestroyGameObject(_weatherRainIntensitySlider);
@@ -236,9 +271,7 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedScrollbar);
                 DestroyGameObject(_advancedScrollbarTrack);
                 DestroyGameObject(_advancedScrollbarThumb);
-                DestroyGameObject(_advancedTimeTitle);
-                DestroyGameObject(_advancedShowIngameClockPanelCheckBox);
-                DestroyGameObject(_advancedShowSpeedInClockPanelCheckBox);
+                DestroyGameObject(_advancedWorldTitle);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
                 DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
@@ -250,6 +283,15 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedLockCloudIntensityCheckBox);
                 DestroyGameObject(_advancedLockNorthernLightsIntensityCheckBox);
                 DestroyGameObject(_advancedWeatherDivider);
+                DestroyGameObject(_advancedClockTitle);
+                DestroyGameObject(_advancedShowIngameClockPanelCheckBox);
+                DestroyGameObject(_advancedShowSpeedInClockPanelCheckBox);
+                DestroyGameObject(_advancedTextColorInClockPanelDropDownLabel);
+                DestroyGameObject(_advancedTextColorInClockPanelDropDown);
+                DestroyGameObject(_advancedUseOutlineInClockPanelCheckBox);
+                DestroyGameObject(_advancedOutlineColorInClockPanelDropDownLabel);
+                DestroyGameObject(_advancedOutlineColorInClockPanelDropDown);
+                DestroyGameObject(_advancedClockDivider);
                 DestroyGameObject(_advancedKeymappingsTitle);
                 DestroyGameObject(_advancedKeymappingsEnabledCheckBox);
                 DestroyGameObject(_advancedKeymappingsIncreaseGameSpeedDropDownLabel);
@@ -299,7 +341,7 @@ namespace PlayIt.Panels
                 clipChildren = true;
                 isVisible = false;
                 width = 400f;
-                height = 400f;
+                height = 450f;
 
                 _title = UIUtils.CreateMenuPanelTitle(this, _ingameAtlas, "Play It!");
                 _title.relativePosition = new Vector3(width / 2f - _title.width / 2f, 15f);
@@ -344,7 +386,7 @@ namespace PlayIt.Panels
 
                 UIPanel panel = null;
 
-                _tabstrip.AddTab("Time", _templateButton, true);
+                _tabstrip.AddTab("World", _templateButton, true);
                 _tabstrip.selectedIndex = 0;
                 panel = _tabstrip.tabContainer.components[0] as UIPanel;
                 if (panel != null)
@@ -357,96 +399,166 @@ namespace PlayIt.Panels
                     panel.autoLayoutPadding.top = 0;
                     panel.autoLayoutPadding.bottom = 10;
 
-                    _timeGameSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeGameSpeedSliderLabel", "Game Speed");
-                    _timeGameSpeedSliderLabel.tooltip = "Set the speed at which the game passes";
+                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                    {
+                        _worldLatitudeSliderLabel = UIUtils.CreateLabel(panel, "WorldLatitudeSliderLabel", "Latitude");
+                        _worldLatitudeSliderLabel.tooltip = "Set the latitude of the geographic coordinate system";
 
-                    _timeGameSpeedSliderNumeral = UIUtils.CreateLabel(_timeGameSpeedSliderLabel, "TimeGameSpeedSliderNumeral", SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed));
-                    _timeGameSpeedSliderNumeral.width = 100f;
-                    _timeGameSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
-                    _timeGameSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeGameSpeedSliderNumeral.width - 10f, 0f);
+                        _worldLatitudeSliderNumeral = UIUtils.CreateLabel(_worldLatitudeSliderLabel, "WorldLatitudeSliderNumeral", ModConfig.Instance.Latitude.ToString());
+                        _worldLatitudeSliderNumeral.width = 100f;
+                        _worldLatitudeSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                        _worldLatitudeSliderNumeral.relativePosition = new Vector3(panel.width - _worldLatitudeSliderNumeral.width - 10f, 0f);
 
-                    _timeGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", _ingameAtlas, 0.01f, 3f, 0.01f, 0.05f, ModConfig.Instance.GameSpeed);
-                    _timeGameSpeedSlider.eventValueChanged += (component, value) =>
+                        _worldLatitudeSlider = UIUtils.CreateSlider(panel, "WorldLatitudeSlider", _ingameAtlas, -80f, 80f, 0.1f, 0.1f, ModConfig.Instance.Latitude);
+                        _worldLatitudeSlider.eventValueChanged += (component, value) =>
+                        {
+                            DayNightManager.Instance.Latitude = value;
+
+                            ModConfig.Instance.Latitude = value;
+                            ModConfig.Instance.Save();
+
+                            _worldLatitudeSliderNumeral.text = value.ToString();
+                        };
+                        _worldLatitudeSlider.eventMouseUp += (component, eventParam) =>
+                        {
+                            if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
+                            {
+                                _worldLatitudeSlider.value = (float)DefaultManager.Instance.Get("Latitude");
+                            }
+                        };
+
+                        _worldLongitudeSliderLabel = UIUtils.CreateLabel(panel, "WorldLongitudeSliderLabel", "Longitude");
+                        _worldLongitudeSliderLabel.tooltip = "Set the longitude of the geographic coordinate system";
+
+                        _worldLongitudeSliderNumeral = UIUtils.CreateLabel(_worldLongitudeSliderLabel, "WorldLongitudeSliderNumeral", ModConfig.Instance.Longitude.ToString());
+                        _worldLongitudeSliderNumeral.width = 100f;
+                        _worldLongitudeSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                        _worldLongitudeSliderNumeral.relativePosition = new Vector3(panel.width - _worldLongitudeSliderNumeral.width - 10f, 0f);
+
+                        _worldLongitudeSlider = UIUtils.CreateSlider(panel, "WorldLongitudeSlider", _ingameAtlas, -180f, 180f, 0.1f, 0.1f, ModConfig.Instance.Longitude);
+                        _worldLongitudeSlider.eventValueChanged += (component, value) =>
+                        {
+                            DayNightManager.Instance.Longitude = value;
+
+                            ModConfig.Instance.Longitude = value;
+                            ModConfig.Instance.Save();
+
+                            _worldLongitudeSliderNumeral.text = value.ToString();
+                        };
+                        _worldLongitudeSlider.eventMouseUp += (component, eventParam) =>
+                        {
+                            if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
+                            {
+                                _worldLongitudeSlider.value = (float)DefaultManager.Instance.Get("Longitude");
+                            }
+                        };
+                    }
+                    else
+                    {
+                        _worldMessagePanel = UIUtils.CreatePanel(panel, "WorldMessagePanel");
+                        _worldMessagePanel.backgroundSprite = "GenericPanelLight";
+                        _worldMessagePanel.color = new Color32(206, 206, 206, 255);
+                        _worldMessagePanel.height = 60f;
+                        _worldMessagePanel.width = _worldMessagePanel.parent.width - 16f;
+                        _worldMessagePanel.relativePosition = new Vector3(8f, 8f);
+
+                        _worldMessageLabel = UIUtils.CreateLabel(_worldMessagePanel, "WorldMessageLabel", "Adjustment of latitude and longitude in Play It! has been disabled because you have Theme Mixer 2 enabled.");
+                        _worldMessageLabel.autoHeight = true;
+                        _worldMessageLabel.width = _worldMessageLabel.parent.width - 16f;
+                        _worldMessageLabel.relativePosition = new Vector3(8f, 8f);
+                        _worldMessageLabel.wordWrap = true;
+                    }
+
+                    _worldGameSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeGameSpeedSliderLabel", "Game Speed");
+                    _worldGameSpeedSliderLabel.tooltip = "Set the speed at which the game passes";
+
+                    _worldGameSpeedSliderNumeral = UIUtils.CreateLabel(_worldGameSpeedSliderLabel, "TimeGameSpeedSliderNumeral", SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed));
+                    _worldGameSpeedSliderNumeral.width = 100f;
+                    _worldGameSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _worldGameSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _worldGameSpeedSliderNumeral.width - 10f, 0f);
+
+                    _worldGameSpeedSlider = UIUtils.CreateSlider(panel, "TimeGameSpeedSlider", _ingameAtlas, 0.01f, 3f, 0.01f, 0.05f, ModConfig.Instance.GameSpeed);
+                    _worldGameSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.GameSpeed = value;
                         ModConfig.Instance.Save();
 
-                        _timeGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
+                        _worldGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
                     };
-                    _timeGameSpeedSlider.eventMouseUp += (component, eventParam) =>
+                    _worldGameSpeedSlider.eventMouseUp += (component, eventParam) =>
                     {
                         if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
                         {
-                            _timeGameSpeedSlider.value = 1f;
+                            _worldGameSpeedSlider.value = 1f;
                         }
                     };
 
-                    _timeDayNightSpeedSliderLabel = UIUtils.CreateLabel(panel, "TimeDayNightSpeedSliderLabel", "Day/Night Speed");
-                    _timeDayNightSpeedSliderLabel.tooltip = "Set the speed of the day/night cycle";
+                    _worldDayNightSpeedSliderLabel = UIUtils.CreateLabel(panel, "WorldDayNightSpeedSliderLabel", "Day/Night Speed");
+                    _worldDayNightSpeedSliderLabel.tooltip = "Set the speed of the day/night cycle";
 
-                    _timeDayNightSpeedSliderNumeral = UIUtils.CreateLabel(_timeDayNightSpeedSliderLabel, "TimeDayNightSpeedSliderNumeral", SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed));
-                    _timeDayNightSpeedSliderNumeral.width = 100f;
-                    _timeDayNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
-                    _timeDayNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayNightSpeedSliderNumeral.width - 10f, 0f);
+                    _worldDayNightSpeedSliderNumeral = UIUtils.CreateLabel(_worldDayNightSpeedSliderLabel, "WorldDayNightSpeedSliderNumeral", SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed));
+                    _worldDayNightSpeedSliderNumeral.width = 100f;
+                    _worldDayNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _worldDayNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _worldDayNightSpeedSliderNumeral.width - 10f, 0f);
 
-                    _timeDayNightSpeedSlider = UIUtils.CreateSlider(panel, "TimeDayNightSpeedSlider", _ingameAtlas, -1f, 23f, 0.5f, 0.5f, ModConfig.Instance.DayNightSpeed);
-                    _timeDayNightSpeedSlider.eventValueChanged += (component, value) =>
+                    _worldDayNightSpeedSlider = UIUtils.CreateSlider(panel, "WorldDayNightSpeedSlider", _ingameAtlas, -1f, 23f, 0.5f, 0.5f, ModConfig.Instance.DayNightSpeed);
+                    _worldDayNightSpeedSlider.eventValueChanged += (component, value) =>
                     {
                         ModConfig.Instance.DayNightSpeed = value;
                         ModConfig.Instance.Save();
 
-                        _timeDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
+                        _worldDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
                     };
-                    _timeDayNightSpeedSlider.eventMouseUp += (component, eventParam) =>
+                    _worldDayNightSpeedSlider.eventMouseUp += (component, eventParam) =>
                     {
                         if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
                         {
-                            _timeDayNightSpeedSlider.value = 0f;
+                            _worldDayNightSpeedSlider.value = 0f;
                         }
                     };
 
-                    _timeDayTimeHourSliderLabel = UIUtils.CreateLabel(panel, "TimeDayTimeHourSliderLabel", "Time of Day");
-                    _timeDayTimeHourSliderLabel.tooltip = "Set the time of day";
+                    _worldDayTimeHourSliderLabel = UIUtils.CreateLabel(panel, "WorldDayTimeHourSliderLabel", "Time of Day");
+                    _worldDayTimeHourSliderLabel.tooltip = "Set the time of day";
 
-                    _timeDayTimeHourSliderNumeral = UIUtils.CreateLabel(_timeDayTimeHourSliderLabel, "TimeDayTimeHourSliderNumeral", "11:07");
-                    _timeDayTimeHourSliderNumeral.width = 100f;
-                    _timeDayTimeHourSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
-                    _timeDayTimeHourSliderNumeral.relativePosition = new Vector3(panel.width - _timeDayTimeHourSliderNumeral.width - 10f, 0f);
+                    _worldDayTimeHourSliderNumeral = UIUtils.CreateLabel(_worldDayTimeHourSliderLabel, "WorldDayTimeHourSliderNumeral", "11:07");
+                    _worldDayTimeHourSliderNumeral.width = 100f;
+                    _worldDayTimeHourSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _worldDayTimeHourSliderNumeral.relativePosition = new Vector3(panel.width - _worldDayTimeHourSliderNumeral.width - 10f, 0f);
 
-                    _timeDayTimeHourSlider = UIUtils.CreateSlider(panel, "TimeDayTimeHourSlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
-                    _timeDayTimeHourSlider.eventValueChanged += (component, value) =>
+                    _worldDayTimeHourSlider = UIUtils.CreateSlider(panel, "TimeDayTimeHourSlider", _ingameAtlas, 0f, 23.99f, 0.01f, 1f, 12f);
+                    _worldDayTimeHourSlider.eventValueChanged += (component, value) =>
                     {
                         if (Mathf.Abs(DayNightManager.Instance.DayTimeHour - value) > 0.1f)
                         {
                             DayNightManager.Instance.DayTimeHour = value;
                         }
 
-                        _timeDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
+                        _worldDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, value);
                     };
-                    _timeDayTimeHourSlider.eventMouseUp += (component, eventParam) =>
+                    _worldDayTimeHourSlider.eventMouseUp += (component, eventParam) =>
                     {
                         if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
                         {
-                            _timeDayTimeHourSlider.value = 12f;
+                            _worldDayTimeHourSlider.value = 12f;
                         }
                     };
 
-                    _timeDayNightCyclePanel = UIUtils.CreatePanel(panel, "TimeDayNightCyclePanel");
-                    _timeDayNightCyclePanel.isVisible = false;
-                    _timeDayNightCyclePanel.width = panel.parent.width - 10f;
-                    _timeDayNightCyclePanel.height = 100f;
+                    _worldDayNightCyclePanel = UIUtils.CreatePanel(panel, "WorldDayNightCyclePanel");
+                    _worldDayNightCyclePanel.isVisible = false;
+                    _worldDayNightCyclePanel.width = panel.parent.width - 10f;
+                    _worldDayNightCyclePanel.height = 100f;
 
-                    _timeDayNightCycleLabel = UIUtils.CreateLabel(_timeDayNightCyclePanel, "TimeDayNightCycleLabel", "Day/night cycle is not enabled.");
-                    _timeDayNightCycleLabel.height = 50f;
-                    _timeDayNightCycleLabel.relativePosition = new Vector3(0f, 0f);
+                    _worldDayNightCycleLabel = UIUtils.CreateLabel(_worldDayNightCyclePanel, "WorldDayNightCycleLabel", "Day/night cycle is not enabled.");
+                    _worldDayNightCycleLabel.height = 50f;
+                    _worldDayNightCycleLabel.relativePosition = new Vector3(0f, 0f);
 
-                    _timeDayNightCycleButton = UIUtils.CreatePanelButton(_timeDayNightCyclePanel, "TimeDayNightCycleButton", _ingameAtlas, "Enable");
-                    _timeDayNightCycleButton.relativePosition = new Vector3(0f, 40f);
-                    _timeDayNightCycleButton.eventClick += (component, eventParam) =>
+                    _worldDayNightCycleButton = UIUtils.CreatePanelButton(_worldDayNightCyclePanel, "WorldDayNightCycleButton", _ingameAtlas, "Enable");
+                    _worldDayNightCycleButton.relativePosition = new Vector3(0f, 40f);
+                    _worldDayNightCycleButton.eventClick += (component, eventParam) =>
                     {
                         if (!eventParam.used)
                         {
-                            ModUtils.SetDayNightCycleInOptionsGameplayPanel(true);
+                            GameOptionsHelper.SetDayNightCycleInOptionsGameplayPanel(true);
 
                             eventParam.Use();
                         }
@@ -590,7 +702,7 @@ namespace PlayIt.Panels
                     {
                         if (!eventParam.used)
                         {
-                            ModUtils.SetDynamicWeatherInOptionsGameplayPanel(true);
+                            GameOptionsHelper.SetDynamicWeatherInOptionsGameplayPanel(true);
 
                             eventParam.Use();
                         }
@@ -634,8 +746,8 @@ namespace PlayIt.Panels
                     _advancedScrollbarTrack.fillDirection = UIFillDirection.Vertical;
 
                     _advancedScrollbarThumb = UIUtils.CreateSlicedSprite(_advancedScrollbar, "AdvancedScrollbarThumb");
-                    _advancedScrollbarThumb.width = _advancedScrollbar.width - 5f;
-                    _advancedScrollbarThumb.relativePosition = new Vector3(2.5f, 0f);
+                    _advancedScrollbarThumb.width = _advancedScrollbar.width - 6f;
+                    _advancedScrollbarThumb.relativePosition = new Vector3(3f, 0f);
                     _advancedScrollbarThumb.spriteName = "ScrollbarThumb";
                     _advancedScrollbarThumb.fillDirection = UIFillDirection.Vertical;
 
@@ -643,37 +755,21 @@ namespace PlayIt.Panels
                     _advancedScrollbar.trackObject = _advancedScrollbarTrack;
                     _advancedScrollbar.thumbObject = _advancedScrollbarThumb;
 
-                    _advancedTimeTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedTimeTitle", "Time");
-                    _advancedTimeTitle.tooltip = "Advanced options for Time";
-
-                    _advancedShowIngameClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowIngameClockPanelCheckBox", _ingameAtlas, "Show In-game Clock", ModConfig.Instance.ShowClock);
-                    _advancedShowIngameClockPanelCheckBox.tooltip = "Set if in-game clock panel should be visible";
-                    _advancedShowIngameClockPanelCheckBox.eventCheckChanged += (component, value) =>
-                    {
-                        ModConfig.Instance.ShowClock = value;
-                        ModConfig.Instance.Save();
-                    };
-
-                    _advancedShowSpeedInClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedInClockPanelCheckBox", _ingameAtlas, "Show Game and Day/Night Speed", ModConfig.Instance.ShowSpeedInClockPanel);
-                    _advancedShowSpeedInClockPanelCheckBox.tooltip = "Set if in-game clock panel should show game and day/night speed";
-                    _advancedShowSpeedInClockPanelCheckBox.eventCheckChanged += (component, value) =>
-                    {
-                        ModConfig.Instance.ShowSpeedInClockPanel = value;
-                        ModConfig.Instance.Save();
-                    };
+                    _advancedWorldTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedWorldTitle", "World");
+                    _advancedWorldTitle.tooltip = "Advanced options for World";
 
                     _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
                     _advancedTimeConventionDropDownLabel.tooltip = "Set the convention of time to either 12 or 24-hours clock";
 
                     _advancedTimeConventionDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedTimeConventionDropDown", _ingameAtlas);
-                    _advancedTimeConventionDropDown.items = ModInvariables.TimeConvention;
+                    _advancedTimeConventionDropDown.items = ModInvariables.TimeConventions;
                     _advancedTimeConventionDropDown.selectedIndex = ModConfig.Instance.TimeConvention;
                     _advancedTimeConventionDropDown.eventSelectedIndexChanged += (component, value) =>
                     {
                         ModConfig.Instance.TimeConvention = value;
                         ModConfig.Instance.Save();
 
-                        _timeDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
+                        _worldDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
                     };
 
                     _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
@@ -683,8 +779,8 @@ namespace PlayIt.Panels
                         ModConfig.Instance.ShowSpeedInPercentages = value;
                         ModConfig.Instance.Save();
 
-                        _timeGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed);
-                        _timeDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed);
+                        _worldGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed);
+                        _worldDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed);
                     };
 
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
@@ -733,6 +829,59 @@ namespace PlayIt.Panels
                     };
 
                     _advancedWeatherDivider = UIUtils.CreateDivider(_advancedScrollablePanel, "AdvancedWeatherDivider", _ingameAtlas);
+
+                    _advancedClockTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedClockTitle", "Clock");
+                    _advancedClockTitle.tooltip = "Advanced options for Clock";
+
+                    _advancedShowIngameClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowIngameClockPanelCheckBox", _ingameAtlas, "Show In-game Clock", ModConfig.Instance.ShowClock);
+                    _advancedShowIngameClockPanelCheckBox.tooltip = "Set if in-game clock panel should be visible";
+                    _advancedShowIngameClockPanelCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.ShowClock = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedShowSpeedInClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedInClockPanelCheckBox", _ingameAtlas, "Show Game and Day/Night Speed", ModConfig.Instance.ShowSpeedInClockPanel);
+                    _advancedShowSpeedInClockPanelCheckBox.tooltip = "Set if in-game clock panel should show game and day/night speed";
+                    _advancedShowSpeedInClockPanelCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.ShowSpeedInClockPanel = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedTextColorInClockPanelDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedTextColorInClockPanelDropDownLabel", "Text Color");
+                    _advancedTextColorInClockPanelDropDownLabel.tooltip = "Set the text color for the in-game clock panel";
+
+                    _advancedTextColorInClockPanelDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedTextColorInClockPanelDropDown", _ingameAtlas);
+                    _advancedTextColorInClockPanelDropDown.items = ModInvariables.TextColors;
+                    _advancedTextColorInClockPanelDropDown.selectedIndex = ModConfig.Instance.TextColorInClockPanel;
+                    _advancedTextColorInClockPanelDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.TextColorInClockPanel = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedUseOutlineInClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedUseOutlineInClockPanelCheckBox", _ingameAtlas, "Use Outline", ModConfig.Instance.UseOutlineInClockPanel);
+                    _advancedUseOutlineInClockPanelCheckBox.tooltip = "Set if text for in-game clock panel should use outline";
+                    _advancedUseOutlineInClockPanelCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.UseOutlineInClockPanel = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedOutlineColorInClockPanelDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedOutlineColorInClockPanelDropDownLabel", "Outline Color");
+                    _advancedOutlineColorInClockPanelDropDownLabel.tooltip = "Set the outline color for the in-game clock panel";
+
+                    _advancedOutlineColorInClockPanelDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedOutlineColorInClockPanelDropDown", _ingameAtlas);
+                    _advancedOutlineColorInClockPanelDropDown.items = ModInvariables.OutlineColors;
+                    _advancedOutlineColorInClockPanelDropDown.selectedIndex = ModConfig.Instance.OutlineColorInClockPanel;
+                    _advancedOutlineColorInClockPanelDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.OutlineColorInClockPanel = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedClockDivider = UIUtils.CreateDivider(_advancedScrollablePanel, "AdvancedClockDivider", _ingameAtlas);
 
                     _advancedKeymappingsTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedKeymappingsTitle", "Keymappings");
                     _advancedKeymappingsTitle.tooltip = "Advanced options for Keymappings";
@@ -841,7 +990,7 @@ namespace PlayIt.Panels
                                 dayTimeHour = angle * 12.0f / 180.0f;
                                 timeOfDay = SimulationManager.Lagrange4(dayTimeHour, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
 
-                                _timeDayTimeHourSlider.value = dayTimeHour + (dayTimeHour - timeOfDay);
+                                _worldDayTimeHourSlider.value = dayTimeHour + (dayTimeHour - timeOfDay);
                             }
                         };
                     }
@@ -870,9 +1019,9 @@ namespace PlayIt.Panels
         {
             try
             {
-                if (_timeGameSpeedSlider.value != GameManager.Instance.GameSpeed)
+                if (_worldGameSpeedSlider.value != GameManager.Instance.GameSpeed)
                 {
-                    _timeGameSpeedSlider.value = GameManager.Instance.GameSpeed;
+                    _worldGameSpeedSlider.value = GameManager.Instance.GameSpeed;
                 }
             }
             catch (Exception e)
@@ -885,9 +1034,9 @@ namespace PlayIt.Panels
         {
             try
             {
-                if (_timeDayNightSpeedSlider.value != DayNightManager.Instance.DayNightSpeed)
+                if (_worldDayNightSpeedSlider.value != DayNightManager.Instance.DayNightSpeed)
                 {
-                    _timeDayNightSpeedSlider.value = DayNightManager.Instance.DayNightSpeed;
+                    _worldDayNightSpeedSlider.value = DayNightManager.Instance.DayNightSpeed;
                 }
             }
             catch (Exception e)
@@ -900,9 +1049,9 @@ namespace PlayIt.Panels
         {
             try
             {
-                if (_timeDayTimeHourSlider.value != DayNightManager.Instance.DayTimeHour)
+                if (_worldDayTimeHourSlider.value != DayNightManager.Instance.DayTimeHour)
                 {
-                    _timeDayTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
+                    _worldDayTimeHourSlider.value = DayNightManager.Instance.DayTimeHour;
                 }
             }
             catch (Exception e)

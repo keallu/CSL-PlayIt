@@ -2,7 +2,22 @@
 {
     public static class ModInvariables
     {
-        public static readonly string[] TimeConvention =
+        public static readonly string[] TextColors =
+        {
+            "White",
+            "Black"
+        };
+
+        public static readonly string[] OutlineColors =
+        {
+            "White",
+            "Black",
+            "Red",
+            "Green",
+            "Blue"
+        };
+
+        public static readonly string[] TimeConventions =
         {
             "12-hours clock",
             "24-hour clock"

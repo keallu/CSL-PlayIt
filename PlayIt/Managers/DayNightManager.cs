@@ -7,6 +7,7 @@ namespace PlayIt.Managers
     public class DayNightManager : MonoBehaviour
     {
         private SimulationManager simulationManager = Singleton<SimulationManager>.instance;
+        private DayNightProperties dayNightProperties = DayNightProperties.instance;
 
         private uint previousCurrentFrameIndex;
         private uint previousDayTimeOffsetFrame;
@@ -18,6 +19,30 @@ namespace PlayIt.Managers
             get
             {
                 return instance ?? (instance = new DayNightManager());
+            }
+        }
+
+        public float Latitude
+        {
+            get
+            {
+                return dayNightProperties.m_Latitude;
+            }
+            set
+            {
+                dayNightProperties.m_Latitude = value;
+            }
+        }
+
+        public float Longitude
+        {
+            get
+            {
+                return dayNightProperties.m_Longitude;
+            }
+            set
+            {
+                dayNightProperties.m_Longitude = value;
             }
         }
 

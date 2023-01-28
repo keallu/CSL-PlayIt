@@ -13,6 +13,8 @@
         public bool ShowClock { get; set; } = false;
         public float ClockPositionX { get; set; } = 0f;
         public float ClockPositionY { get; set; } = 0f;
+        public float Latitude { get; set; } = float.NaN;
+        public float Longitude { get; set; } = float.NaN;
         public float GameSpeed { get; set; } = 1f;
         public float DayNightSpeed { get; set; } = 0f;
         public float RainIntensity { get; set; } = 0f;
@@ -20,6 +22,9 @@
         public float CloudIntensity { get; set; } = 0f;
         public float NorthernLightsIntensity { get; set; } = 0f;
         public bool ShowSpeedInClockPanel { get; set; } = false;
+        public int TextColorInClockPanel { get; set; } = 0;
+        public bool UseOutlineInClockPanel { get; set; } = false;
+        public int OutlineColorInClockPanel { get; set; } = 0;
         public int TimeConvention { get; set; } = 1;
         public bool ShowSpeedInPercentages { get; set; } = false;
         public bool PauseDayNightCycleOnSimulationPause { get; set; } = false;

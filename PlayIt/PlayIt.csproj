@@ -59,11 +59,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Helpers\CompatibilityHelper.cs" />
+    <Compile Include="Helpers\GameOptionsHelper.cs" />
     <Compile Include="Helpers\SpeedHelper.cs" />
     <Compile Include="Helpers\TimeHelper.cs" />
     <Compile Include="KeyChecker.cs" />
     <Compile Include="Loading.cs" />
     <Compile Include="Managers\DayNightManager.cs" />
+    <Compile Include="Managers\DefaultManager.cs" />
     <Compile Include="Managers\GameManager.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModInfo.cs" />
