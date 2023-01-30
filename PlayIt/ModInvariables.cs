@@ -2,6 +2,18 @@
 {
     public static class ModInvariables
     {
+        public static readonly string[] DegreeConventions =
+        {
+            "Sexagesimal",
+            "Decimal"
+        };
+
+        public static readonly string[] TimeConventions =
+        {
+            "12-hours clock",
+            "24-hour clock"
+        };
+
         public static readonly string[] TextColors =
         {
             "White",
@@ -15,12 +27,6 @@
             "Red",
             "Green",
             "Blue"
-        };
-
-        public static readonly string[] TimeConventions =
-        {
-            "12-hours clock",
-            "24-hour clock"
         };
 
         public static readonly int[] Keymappings =

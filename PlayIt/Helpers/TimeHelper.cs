@@ -5,7 +5,7 @@ namespace PlayIt.Helpers
 {
     public static class TimeHelper
     {
-        public static string FormatTimeOfDay(bool twelweHourConvention, float dayTimeHour)
+        public static string FormatTimeOfDay(bool useTwelweHourConvention, float dayTimeHour)
         {
             float timeOfDay = SimulationManager.Lagrange4(dayTimeHour, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
 
@@ -14,7 +14,7 @@ namespace PlayIt.Helpers
 
             DateTime dateTime = DateTime.Parse(string.Format("{0,2:00}:{1,2:00}", hour, minute));
 
-            return twelweHourConvention ? dateTime.ToString("hh:mm tt") : dateTime.ToString("HH:mm");
+            return useTwelweHourConvention ? dateTime.ToString("hh:mm tt") : dateTime.ToString("HH:mm");
         }
     }
 }

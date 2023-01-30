@@ -61,6 +61,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Helpers\CompatibilityHelper.cs" />
     <Compile Include="Helpers\GameOptionsHelper.cs" />
+    <Compile Include="Helpers\GeoHelper.cs" />
     <Compile Include="Helpers\SpeedHelper.cs" />
     <Compile Include="Helpers\TimeHelper.cs" />
     <Compile Include="KeyChecker.cs" />

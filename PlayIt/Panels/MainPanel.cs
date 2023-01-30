@@ -14,6 +14,8 @@ namespace PlayIt.Panels
 
         private UIMultiStateButton _zoomButton;
 
+        WeatherManager _weatherManager = Singleton<WeatherManager>.instance;
+
         private UITextureAtlas _ingameAtlas;
         private UILabel _title;
         private UIButton _close;
@@ -64,6 +66,8 @@ namespace PlayIt.Panels
         private UISlicedSprite _advancedScrollbarTrack;
         private UISlicedSprite _advancedScrollbarThumb;
         private UILabel _advancedWorldTitle;
+        private UILabel _advancedDegreeConventionDropDownLabel;
+        private UIDropDown _advancedDegreeConventionDropDown;
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
         private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
@@ -78,6 +82,7 @@ namespace PlayIt.Panels
         private UILabel _advancedClockTitle;
         private UICheckBox _advancedShowIngameClockPanelCheckBox;
         private UICheckBox _advancedShowSpeedInClockPanelCheckBox;
+        private UICheckBox _advancedShowLatitudeAndLongitudeInClockPanelCheckBox;
         private UILabel _advancedTextColorInClockPanelDropDownLabel;
         private UIDropDown _advancedTextColorInClockPanelDropDown;
         private UICheckBox _advancedUseOutlineInClockPanelCheckBox;
@@ -86,6 +91,14 @@ namespace PlayIt.Panels
         private UISprite _advancedClockDivider;
         private UILabel _advancedKeymappingsTitle;
         private UICheckBox _advancedKeymappingsEnabledCheckBox;
+        private UILabel _advancedKeymappingsIncreaseLatitudeDropDownLabel;
+        private UIDropDown _advancedKeymappingsIncreaseLatitudeDropDown;
+        private UILabel _advancedKeymappingsDecreaseLatitudeDropDownLabel;
+        private UIDropDown _advancedKeymappingsDecreaseLatitudeDropDown;
+        private UILabel _advancedKeymappingsIncreaseLongitudeDropDownLabel;
+        private UIDropDown _advancedKeymappingsIncreaseLongitudeDropDown;
+        private UILabel _advancedKeymappingsDecreaseLongitudeDropDownLabel;
+        private UIDropDown _advancedKeymappingsDecreaseLongitudeDropDown;
         private UILabel _advancedKeymappingsIncreaseGameSpeedDropDownLabel;
         private UIDropDown _advancedKeymappingsIncreaseGameSpeedDropDown;
         private UILabel _advancedKeymappingsDecreaseGameSpeedDropDownLabel;
@@ -167,10 +180,21 @@ namespace PlayIt.Panels
                 {
                     _timer -= 1;
 
+                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                    {
+                        UpdateLatitudeAndLongitude();
+                    }
+
                     UpdateWeather();
 
                     if (isVisible)
                     {
+                        if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                        {
+                            RefreshLatitude();
+                            RefreshLongitude();
+                        }
+
                         RefreshGameSpeed();
                         RefreshDayNightSpeed();
                         RefreshTimeOfDay();
@@ -183,6 +207,26 @@ namespace PlayIt.Panels
 
                 if (ModConfig.Instance.KeymappingsEnabled && KeyChecker.GetKeyCombo(out int key))
                 {
+                    if (ModConfig.Instance.KeymappingsIncreaseLatitude == key && _worldLatitudeSlider.value <= 70f)
+                    {
+                        _worldLatitudeSlider.value = _worldLatitudeSlider.value + 10f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsDecreaseLatitude == key && _worldLatitudeSlider.value >= -70f)
+                    {
+                        _worldLatitudeSlider.value = _worldLatitudeSlider.value - 10f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsIncreaseLongitude == key && _worldLongitudeSlider.value <= 170f)
+                    {
+                        _worldLongitudeSlider.value = _worldLongitudeSlider.value + 10f;
+                    }
+
+                    if (ModConfig.Instance.KeymappingsDecreaseLongitude == key && _worldLongitudeSlider.value >= -170f)
+                    {
+                        _worldLongitudeSlider.value = _worldLongitudeSlider.value - 10f;
+                    }
+
                     if (ModConfig.Instance.KeymappingsIncreaseGameSpeed == key && _worldGameSpeedSlider.value <= 2.95f)
                     {
                         _worldGameSpeedSlider.value = _worldGameSpeedSlider.value + 0.05f;
@@ -272,6 +316,8 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedScrollbarTrack);
                 DestroyGameObject(_advancedScrollbarThumb);
                 DestroyGameObject(_advancedWorldTitle);
+                DestroyGameObject(_advancedDegreeConventionDropDownLabel);
+                DestroyGameObject(_advancedDegreeConventionDropDown);
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
                 DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
@@ -286,6 +332,7 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedClockTitle);
                 DestroyGameObject(_advancedShowIngameClockPanelCheckBox);
                 DestroyGameObject(_advancedShowSpeedInClockPanelCheckBox);
+                DestroyGameObject(_advancedShowLatitudeAndLongitudeInClockPanelCheckBox);
                 DestroyGameObject(_advancedTextColorInClockPanelDropDownLabel);
                 DestroyGameObject(_advancedTextColorInClockPanelDropDown);
                 DestroyGameObject(_advancedUseOutlineInClockPanelCheckBox);
@@ -294,6 +341,14 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedClockDivider);
                 DestroyGameObject(_advancedKeymappingsTitle);
                 DestroyGameObject(_advancedKeymappingsEnabledCheckBox);
+                DestroyGameObject(_advancedKeymappingsIncreaseLatitudeDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsIncreaseLatitudeDropDown);
+                DestroyGameObject(_advancedKeymappingsDecreaseLatitudeDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsDecreaseLatitudeDropDown);
+                DestroyGameObject(_advancedKeymappingsIncreaseLongitudeDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsIncreaseLongitudeDropDown);
+                DestroyGameObject(_advancedKeymappingsDecreaseLongitudeDropDownLabel);
+                DestroyGameObject(_advancedKeymappingsDecreaseLongitudeDropDown);
                 DestroyGameObject(_advancedKeymappingsIncreaseGameSpeedDropDownLabel);
                 DestroyGameObject(_advancedKeymappingsIncreaseGameSpeedDropDown);
                 DestroyGameObject(_advancedKeymappingsDecreaseGameSpeedDropDownLabel);
@@ -306,7 +361,6 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedKeymappingsForwardTimeOfDayDropDown);
                 DestroyGameObject(_advancedKeymappingsBackwardTimeOfDayDropDownLabel);
                 DestroyGameObject(_advancedKeymappingsBackwardTimeOfDayDropDown);
-
             }
             catch (Exception e)
             {
@@ -329,7 +383,7 @@ namespace PlayIt.Panels
 
         public void ForceDayTimeHour(float dayTimeHour)
         {
-            DayNightManager.Instance.DayTimeHour = dayTimeHour;
+            _worldDayTimeHourSlider.value = dayTimeHour;
         }
 
         private void CreateUI()
@@ -402,14 +456,14 @@ namespace PlayIt.Panels
                     if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
                     {
                         _worldLatitudeSliderLabel = UIUtils.CreateLabel(panel, "WorldLatitudeSliderLabel", "Latitude");
-                        _worldLatitudeSliderLabel.tooltip = "Set the latitude of the geographic coordinate system";
+                        _worldLatitudeSliderLabel.tooltip = "Set the latitude";
 
-                        _worldLatitudeSliderNumeral = UIUtils.CreateLabel(_worldLatitudeSliderLabel, "WorldLatitudeSliderNumeral", ModConfig.Instance.Latitude.ToString());
+                        _worldLatitudeSliderNumeral = UIUtils.CreateLabel(_worldLatitudeSliderLabel, "WorldLatitudeSliderNumeral", GeoHelper.FormatDegree(ModConfig.Instance.DegreeConvention == 0, ModConfig.Instance.Latitude));
                         _worldLatitudeSliderNumeral.width = 100f;
                         _worldLatitudeSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                         _worldLatitudeSliderNumeral.relativePosition = new Vector3(panel.width - _worldLatitudeSliderNumeral.width - 10f, 0f);
 
-                        _worldLatitudeSlider = UIUtils.CreateSlider(panel, "WorldLatitudeSlider", _ingameAtlas, -80f, 80f, 0.1f, 0.1f, ModConfig.Instance.Latitude);
+                        _worldLatitudeSlider = UIUtils.CreateSlider(panel, "WorldLatitudeSlider", _ingameAtlas, -80f, 80f, 0.1f, 10f, ModConfig.Instance.Latitude);
                         _worldLatitudeSlider.eventValueChanged += (component, value) =>
                         {
                             DayNightManager.Instance.Latitude = value;
@@ -417,7 +471,7 @@ namespace PlayIt.Panels
                             ModConfig.Instance.Latitude = value;
                             ModConfig.Instance.Save();
 
-                            _worldLatitudeSliderNumeral.text = value.ToString();
+                            _worldLatitudeSliderNumeral.text = GeoHelper.FormatDegree(ModConfig.Instance.DegreeConvention == 0, value);
                         };
                         _worldLatitudeSlider.eventMouseUp += (component, eventParam) =>
                         {
@@ -428,14 +482,14 @@ namespace PlayIt.Panels
                         };
 
                         _worldLongitudeSliderLabel = UIUtils.CreateLabel(panel, "WorldLongitudeSliderLabel", "Longitude");
-                        _worldLongitudeSliderLabel.tooltip = "Set the longitude of the geographic coordinate system";
+                        _worldLongitudeSliderLabel.tooltip = "Set the longitude";
 
-                        _worldLongitudeSliderNumeral = UIUtils.CreateLabel(_worldLongitudeSliderLabel, "WorldLongitudeSliderNumeral", ModConfig.Instance.Longitude.ToString());
+                        _worldLongitudeSliderNumeral = UIUtils.CreateLabel(_worldLongitudeSliderLabel, "WorldLongitudeSliderNumeral", GeoHelper.FormatDegree(ModConfig.Instance.DegreeConvention == 0, ModConfig.Instance.Longitude));
                         _worldLongitudeSliderNumeral.width = 100f;
                         _worldLongitudeSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
                         _worldLongitudeSliderNumeral.relativePosition = new Vector3(panel.width - _worldLongitudeSliderNumeral.width - 10f, 0f);
 
-                        _worldLongitudeSlider = UIUtils.CreateSlider(panel, "WorldLongitudeSlider", _ingameAtlas, -180f, 180f, 0.1f, 0.1f, ModConfig.Instance.Longitude);
+                        _worldLongitudeSlider = UIUtils.CreateSlider(panel, "WorldLongitudeSlider", _ingameAtlas, -180f, 180f, 0.1f, 10f, ModConfig.Instance.Longitude);
                         _worldLongitudeSlider.eventValueChanged += (component, value) =>
                         {
                             DayNightManager.Instance.Longitude = value;
@@ -443,7 +497,7 @@ namespace PlayIt.Panels
                             ModConfig.Instance.Longitude = value;
                             ModConfig.Instance.Save();
 
-                            _worldLongitudeSliderNumeral.text = value.ToString();
+                            _worldLongitudeSliderNumeral.text = GeoHelper.FormatDegree(ModConfig.Instance.DegreeConvention == 0, value);
                         };
                         _worldLongitudeSlider.eventMouseUp += (component, eventParam) =>
                         {
@@ -590,8 +644,8 @@ namespace PlayIt.Panels
                     _weatherRainIntensitySlider = UIUtils.CreateSlider(panel, "WeatherRainIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherRainIntensitySlider.eventValueChanged += (component, value) =>
                     {
-                        Singleton<WeatherManager>.instance.m_targetRain = value;
-                        Singleton<WeatherManager>.instance.m_currentRain = value;
+                        _weatherManager.m_targetRain = value;
+                        _weatherManager.m_currentRain = value;
 
                         ModConfig.Instance.RainIntensity = value;
                         ModConfig.Instance.Save();
@@ -617,8 +671,8 @@ namespace PlayIt.Panels
                     _weatherFogIntensitySlider = UIUtils.CreateSlider(panel, "WeatherFogIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherFogIntensitySlider.eventValueChanged += (component, value) =>
                     {
-                        Singleton<WeatherManager>.instance.m_targetFog = value;
-                        Singleton<WeatherManager>.instance.m_currentFog = value;
+                        _weatherManager.m_targetFog = value;
+                        _weatherManager.m_currentFog = value;
 
                         ModConfig.Instance.FogIntensity = value;
                         ModConfig.Instance.Save();
@@ -644,8 +698,8 @@ namespace PlayIt.Panels
                     _weatherCloudIntensitySlider = UIUtils.CreateSlider(panel, "WeatherCloudIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherCloudIntensitySlider.eventValueChanged += (component, value) =>
                     {
-                        Singleton<WeatherManager>.instance.m_targetCloud = value;
-                        Singleton<WeatherManager>.instance.m_currentCloud = value;
+                        _weatherManager.m_targetCloud = value;
+                        _weatherManager.m_currentCloud = value;
 
                         ModConfig.Instance.CloudIntensity = value;
                         ModConfig.Instance.Save();
@@ -671,8 +725,8 @@ namespace PlayIt.Panels
                     _weatherNorthernLightsIntensitySlider = UIUtils.CreateSlider(panel, "WeatherNorthernLightsIntensitySlider", _ingameAtlas, 0f, 1f, 0.01f, 0.1f, 0f);
                     _weatherNorthernLightsIntensitySlider.eventValueChanged += (component, value) =>
                     {
-                        Singleton<WeatherManager>.instance.m_targetNorthernLights = value;
-                        Singleton<WeatherManager>.instance.m_currentNorthernLights = value;
+                        _weatherManager.m_targetNorthernLights = value;
+                        _weatherManager.m_currentNorthernLights = value;
 
                         ModConfig.Instance.NorthernLightsIntensity = value;
                         ModConfig.Instance.Save();
@@ -758,6 +812,24 @@ namespace PlayIt.Panels
                     _advancedWorldTitle = UIUtils.CreateTitle(_advancedScrollablePanel, "AdvancedWorldTitle", "World");
                     _advancedWorldTitle.tooltip = "Advanced options for World";
 
+                    _advancedDegreeConventionDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedDegreeConventionDropDownLabel", "Degree Convention");
+                    _advancedDegreeConventionDropDownLabel.tooltip = "Set the convention of degree to either sexagesimal or decimal";
+
+                    _advancedDegreeConventionDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedDegreeConventionDropDown", _ingameAtlas);
+                    _advancedDegreeConventionDropDown.items = ModInvariables.DegreeConventions;
+                    _advancedDegreeConventionDropDown.selectedIndex = ModConfig.Instance.DegreeConvention;
+                    _advancedDegreeConventionDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.DegreeConvention = value;
+                        ModConfig.Instance.Save();
+
+                        if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                        {
+                            _worldLatitudeSliderNumeral.text = GeoHelper.FormatDegree(value == 0, DayNightManager.Instance.Latitude);
+                            _worldLongitudeSliderNumeral.text = GeoHelper.FormatDegree(value == 0, DayNightManager.Instance.Longitude);
+                        }
+                    };
+
                     _advancedTimeConventionDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedTimeConventionDropDownLabel", "Time Convention");
                     _advancedTimeConventionDropDownLabel.tooltip = "Set the convention of time to either 12 or 24-hours clock";
 
@@ -772,15 +844,15 @@ namespace PlayIt.Panels
                         _worldDayTimeHourSliderNumeral.text = TimeHelper.FormatTimeOfDay(value == 0, DayNightManager.Instance.DayTimeHour);
                     };
 
-                    _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedAsPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
+                    _advancedShowSpeedInPercentagesCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowSpeedInPercentageCheckBox", _ingameAtlas, "Show Speed in percentages", ModConfig.Instance.ShowSpeedInPercentages);
                     _advancedShowSpeedInPercentagesCheckBox.tooltip = "Set if game speed and day/night speed should be shown in percentages";
                     _advancedShowSpeedInPercentagesCheckBox.eventCheckChanged += (component, value) =>
                     {
                         ModConfig.Instance.ShowSpeedInPercentages = value;
                         ModConfig.Instance.Save();
 
-                        _worldGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed);
-                        _worldDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed);
+                        _worldGameSpeedSliderNumeral.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, GameManager.Instance.GameSpeed);
+                        _worldDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, DayNightManager.Instance.DayNightSpeed);
                     };
 
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
@@ -849,6 +921,14 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
+                    _advancedShowLatitudeAndLongitudeInClockPanelCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedShowLatitudeAndLongitudeInClockPanelCheckBox", _ingameAtlas, "Show Latitude and Longitude", ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel);
+                    _advancedShowLatitudeAndLongitudeInClockPanelCheckBox.tooltip = "Set if in-game clock panel should show latitude and longitude";
+                    _advancedShowLatitudeAndLongitudeInClockPanelCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel = value;
+                        ModConfig.Instance.Save();
+                    };
+
                     _advancedTextColorInClockPanelDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedTextColorInClockPanelDropDownLabel", "Text Color");
                     _advancedTextColorInClockPanelDropDownLabel.tooltip = "Set the text color for the in-game clock panel";
 
@@ -891,6 +971,54 @@ namespace PlayIt.Panels
                     _advancedKeymappingsEnabledCheckBox.eventCheckChanged += (component, value) =>
                     {
                         ModConfig.Instance.KeymappingsEnabled = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsIncreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDownLabel", "Increase Latitude");
+                    _advancedKeymappingsIncreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for increasing latitude";
+
+                    _advancedKeymappingsIncreaseLatitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDown", _ingameAtlas);
+                    _advancedKeymappingsIncreaseLatitudeDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsIncreaseLatitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseLatitude;
+                    _advancedKeymappingsIncreaseLatitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsIncreaseLatitude = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsDecreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLatitudeDropDownLabel", "Decrease Latitude");
+                    _advancedKeymappingsDecreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for decreasing latitude";
+
+                    _advancedKeymappingsDecreaseLatitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLatitudeDropDown", _ingameAtlas);
+                    _advancedKeymappingsDecreaseLatitudeDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsDecreaseLatitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseLatitude;
+                    _advancedKeymappingsDecreaseLatitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsDecreaseLatitude = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsIncreaseLongitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLongitudeDropDownLabel", "Increase Longitude");
+                    _advancedKeymappingsIncreaseLongitudeDropDownLabel.tooltip = "Set the keymapping for increasing longitude";
+
+                    _advancedKeymappingsIncreaseLongitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLongitudeDropDown", _ingameAtlas);
+                    _advancedKeymappingsIncreaseLongitudeDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsIncreaseLongitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseLongitude;
+                    _advancedKeymappingsIncreaseLongitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsIncreaseLongitude = value;
+                        ModConfig.Instance.Save();
+                    };
+
+                    _advancedKeymappingsDecreaseLongitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLongitudeDropDownLabel", "Decrease Longitude");
+                    _advancedKeymappingsDecreaseLongitudeDropDownLabel.tooltip = "Set the keymapping for decreasing longitude";
+
+                    _advancedKeymappingsDecreaseLongitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLongitudeDropDown", _ingameAtlas);
+                    _advancedKeymappingsDecreaseLongitudeDropDown.items = ModInvariables.KeymappingNames;
+                    _advancedKeymappingsDecreaseLongitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseLongitude;
+                    _advancedKeymappingsDecreaseLongitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.KeymappingsDecreaseLongitude = value;
                         ModConfig.Instance.Save();
                     };
 
@@ -1015,6 +1143,36 @@ namespace PlayIt.Panels
             }
         }
 
+        private void RefreshLatitude()
+        {
+            try
+            {
+                if (_worldLatitudeSlider.value != DayNightManager.Instance.Latitude)
+                {
+                    _worldLatitudeSlider.value = DayNightManager.Instance.Latitude;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:RefreshLatitude -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshLongitude()
+        {
+            try
+            {
+                if (_worldLongitudeSlider.value != DayNightManager.Instance.Longitude)
+                {
+                    _worldLongitudeSlider.value = DayNightManager.Instance.Longitude;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:RefreshLongitude -> Exception: " + e.Message);
+            }
+        }
+
         private void RefreshGameSpeed()
         {
             try
@@ -1064,14 +1222,34 @@ namespace PlayIt.Panels
         {
             try
             {
-                _weatherRainIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentRain;
-                _weatherFogIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentFog;
-                _weatherCloudIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentCloud;
-                _weatherNorthernLightsIntensitySlider.value = Singleton<WeatherManager>.instance.m_currentNorthernLights;
+                _weatherRainIntensitySlider.value = _weatherManager.m_currentRain;
+                _weatherFogIntensitySlider.value = _weatherManager.m_currentFog;
+                _weatherCloudIntensitySlider.value = _weatherManager.m_currentCloud;
+                _weatherNorthernLightsIntensitySlider.value = _weatherManager.m_currentNorthernLights;
             }
             catch (Exception e)
             {
                 Debug.Log("[Play It!] MainPanel:RefreshWeather -> Exception: " + e.Message);
+            }
+        }
+
+        private void UpdateLatitudeAndLongitude()
+        {
+            try
+            {
+                if (DayNightManager.Instance.Latitude != ModConfig.Instance.Latitude)
+                {
+                    DayNightManager.Instance.Latitude = ModConfig.Instance.Latitude;
+                }
+
+                if (DayNightManager.Instance.Longitude != ModConfig.Instance.Longitude)
+                {
+                    DayNightManager.Instance.Longitude = ModConfig.Instance.Longitude;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:UpdateLatitudeAndLongitude -> Exception: " + e.Message);
             }
         }
 
@@ -1081,26 +1259,26 @@ namespace PlayIt.Panels
             {
                 if (ModConfig.Instance.LockRainIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentRain = ModConfig.Instance.RainIntensity;
-                    Singleton<WeatherManager>.instance.m_targetRain = ModConfig.Instance.RainIntensity;
+                    _weatherManager.m_currentRain = ModConfig.Instance.RainIntensity;
+                    _weatherManager.m_targetRain = ModConfig.Instance.RainIntensity;
                 }
 
                 if (ModConfig.Instance.LockFogIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentFog = ModConfig.Instance.FogIntensity;
-                    Singleton<WeatherManager>.instance.m_targetFog = ModConfig.Instance.FogIntensity;
+                    _weatherManager.m_currentFog = ModConfig.Instance.FogIntensity;
+                    _weatherManager.m_targetFog = ModConfig.Instance.FogIntensity;
                 }
 
                 if (ModConfig.Instance.LockCloudIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentCloud = ModConfig.Instance.CloudIntensity;
-                    Singleton<WeatherManager>.instance.m_targetCloud = ModConfig.Instance.CloudIntensity;
+                    _weatherManager.m_currentCloud = ModConfig.Instance.CloudIntensity;
+                    _weatherManager.m_targetCloud = ModConfig.Instance.CloudIntensity;
                 }
 
                 if (ModConfig.Instance.LockNorthernLightsIntensity)
                 {
-                    Singleton<WeatherManager>.instance.m_currentNorthernLights = ModConfig.Instance.NorthernLightsIntensity;
-                    Singleton<WeatherManager>.instance.m_targetNorthernLights = ModConfig.Instance.NorthernLightsIntensity;
+                    _weatherManager.m_currentNorthernLights = ModConfig.Instance.NorthernLightsIntensity;
+                    _weatherManager.m_targetNorthernLights = ModConfig.Instance.NorthernLightsIntensity;
                 }
             }
             catch (Exception e)

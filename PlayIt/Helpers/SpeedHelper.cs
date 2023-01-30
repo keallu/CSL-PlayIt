@@ -2,31 +2,31 @@
 {
     public static class SpeedHelper
     {
-        public static string FormatGameSpeed(bool inPercentages, float value)
+        public static string FormatGameSpeed(bool usePercentage, float value)
         {
             if (value == 1f)
             {
-                return inPercentages ? "100%" : "Normal";
+                return usePercentage ? "100%" : "Normal";
             }
             else
             {
-                return inPercentages ? value * 100 + "%" : value.ToString() + "x";
+                return usePercentage ? value * 100 + "%" : value.ToString() + "x";
             }
         }
 
-        public static string FormatDayNightSpeed(bool inPercentages, float value)
+        public static string FormatDayNightSpeed(bool usePercentage, float value)
         {
             if (value == -1f)
             {
-                return inPercentages ? "0%" : "Paused";
+                return usePercentage ? "0%" : "Paused";
             }
             else if (value == 0f)
             {
-                return inPercentages ? "100%" : "Normal";
+                return usePercentage ? "100%" : "Normal";
             }
             else
             {
-                return inPercentages ? (value + 1) * 100 + "%" : (value + 1).ToString() + "x";
+                return usePercentage ? (value + 1) * 100 + "%" : (value + 1).ToString() + "x";
             }
         }
     }

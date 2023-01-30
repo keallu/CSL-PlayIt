@@ -12,10 +12,12 @@ namespace PlayIt.Panels
         private float _timer;
 
         private MainPanel _mainPanel;
-
+        
         private UILabel _timeofDayLabel;
         private UILabel _gameSpeedLabel;
         private UILabel _dayNightSpeedLabel;
+        private UILabel _latitudeLabel;
+        private UILabel _longitudeLabel;
 
         public override void Awake()
         {
@@ -83,6 +85,12 @@ namespace PlayIt.Panels
                             RefreshGameSpeed();
                             RefreshDayNightSpeed();
                         }
+
+                        if (ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel)
+                        {
+                            RefreshLatitude();
+                            RefreshLongitude();
+                        }
                     }
                 }
             }
@@ -97,10 +105,12 @@ namespace PlayIt.Panels
             base.OnDestroy();
 
             try
-            {
+            {                
                 DestroyGameObject(_timeofDayLabel);
                 DestroyGameObject(_gameSpeedLabel);
                 DestroyGameObject(_dayNightSpeedLabel);
+                DestroyGameObject(_latitudeLabel);
+                DestroyGameObject(_longitudeLabel);
             }
             catch (Exception e)
             {
@@ -129,7 +139,7 @@ namespace PlayIt.Panels
                 zOrder = 25;
                 isVisible = false;
                 width = 160f;
-                height = 70f;
+                height = 65f;
 
                 eventMouseMove += (component, eventParam) =>
                 {
@@ -153,29 +163,42 @@ namespace PlayIt.Panels
                     {
                         _mainPanel.ForceDayTimeHour(0f);
                     }
-                };
+                };                
 
                 _timeofDayLabel = UIUtils.CreateLabel(this, "TimeofDayLabel", "11:07");
                 _timeofDayLabel.textScale = 2f;
                 _timeofDayLabel.textAlignment = UIHorizontalAlignment.Center;
-                _timeofDayLabel.width = 144f;
-                _timeofDayLabel.height = 42f;
-                _timeofDayLabel.relativePosition = new Vector3((width - _timeofDayLabel.width) / 2f, (height - _timeofDayLabel.height) / 4f);
+                _timeofDayLabel.width = 160f;
+                _timeofDayLabel.height = 35f;
+                _timeofDayLabel.relativePosition = new Vector3((width - _timeofDayLabel.width) / 2f, 0f);
 
-                _gameSpeedLabel = UIUtils.CreateLabel(this, "GameSpeedLabel", "1x");
+                _gameSpeedLabel = UIUtils.CreateLabel(this, "GameSpeedLabel", "Normal");
                 _gameSpeedLabel.textScale = 0.75f;
-                _gameSpeedLabel.textAlignment = UIHorizontalAlignment.Center;
-                _gameSpeedLabel.width = 72f;
-                _gameSpeedLabel.height = 21f;
-                _gameSpeedLabel.relativePosition = new Vector3((width - _gameSpeedLabel.width) * 0.2f, height - 29f);
+                _gameSpeedLabel.textAlignment = UIHorizontalAlignment.Right;
+                _gameSpeedLabel.width = 75f;
+                _gameSpeedLabel.height = 15f;
+                _gameSpeedLabel.relativePosition = new Vector3(0f, height - 30f);
 
-                _dayNightSpeedLabel = UIUtils.CreateLabel(this, "DayNightSpeedLabel", "1x");
+                _dayNightSpeedLabel = UIUtils.CreateLabel(this, "DayNightSpeedLabel", "Normal");
                 _dayNightSpeedLabel.textScale = 0.75f;
-                _dayNightSpeedLabel.textAlignment = UIHorizontalAlignment.Center;
+                _dayNightSpeedLabel.textAlignment = UIHorizontalAlignment.Left;
+                _dayNightSpeedLabel.width = 75f;
+                _dayNightSpeedLabel.height = 15f;
+                _dayNightSpeedLabel.relativePosition = new Vector3(85f, height - 30f);
 
-                _dayNightSpeedLabel.width = 72f;
-                _dayNightSpeedLabel.height = 21f;
-                _dayNightSpeedLabel.relativePosition = new Vector3((width - _dayNightSpeedLabel.width) * 0.8f, height - 29f);
+                _latitudeLabel = UIUtils.CreateLabel(this, "LatitudeLabel", "0°");
+                _latitudeLabel.textScale = 0.75f;
+                _latitudeLabel.textAlignment = UIHorizontalAlignment.Right;
+                _latitudeLabel.width = 75f;
+                _latitudeLabel.height = 15f;
+                _latitudeLabel.relativePosition = new Vector3(0f, height - 15f);
+
+                _longitudeLabel = UIUtils.CreateLabel(this, "LongitudeLabel", "0°");
+                _longitudeLabel.textScale = 0.75f;
+                _longitudeLabel.textAlignment = UIHorizontalAlignment.Left;
+                _longitudeLabel.width = 75f;
+                _longitudeLabel.height = 15f;
+                _longitudeLabel.relativePosition = new Vector3(85f, height - 15f);
             }
             catch (Exception e)
             {
@@ -188,23 +211,31 @@ namespace PlayIt.Panels
             try
             {
                 isVisible = ModConfig.Instance.ShowClock;
-                absolutePosition = new Vector3(ModConfig.Instance.ClockPositionX, ModConfig.Instance.ClockPositionY);
+                absolutePosition = new Vector3(ModConfig.Instance.ClockPositionX, ModConfig.Instance.ClockPositionY);                
                 _gameSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
                 _dayNightSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
+                _latitudeLabel.isVisible = ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel;
+                _longitudeLabel.isVisible = ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel;
 
-                Color32 color = GetColor(ModConfig.Instance.TextColorInClockPanel);
+                Color32 color = GetColor(ModConfig.Instance.TextColorInClockPanel);                
                 _timeofDayLabel.textColor = color;
                 _gameSpeedLabel.textColor = color;
                 _dayNightSpeedLabel.textColor = color;
+                _latitudeLabel.textColor = color;
+                _longitudeLabel.textColor = color;
 
                 _timeofDayLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
                 _gameSpeedLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
                 _dayNightSpeedLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
+                _latitudeLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
+                _longitudeLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
 
                 color = GetColor(ModConfig.Instance.OutlineColorInClockPanel);
                 _timeofDayLabel.outlineColor = color;
                 _gameSpeedLabel.outlineColor = color;
                 _dayNightSpeedLabel.outlineColor = color;
+                _latitudeLabel.outlineColor = color;
+                _longitudeLabel.outlineColor = color;
             }
             catch (Exception e)
             {
@@ -228,7 +259,7 @@ namespace PlayIt.Panels
         {
             try
             {
-                _gameSpeedLabel.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.GameSpeed);
+                _gameSpeedLabel.text = SpeedHelper.FormatGameSpeed(ModConfig.Instance.ShowSpeedInPercentages, GameManager.Instance.GameSpeed);
             }
             catch (Exception e)
             {
@@ -240,11 +271,35 @@ namespace PlayIt.Panels
         {
             try
             {
-                _dayNightSpeedLabel.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DayNightSpeed);
+                _dayNightSpeedLabel.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, DayNightManager.Instance.DayNightSpeed);
             }
             catch (Exception e)
             {
                 Debug.Log("[Play It!] ClockPanel:RefreshDayNightSpeed -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshLatitude()
+        {
+            try
+            {
+                _latitudeLabel.text = GeoHelper.FormatDegree(ModConfig.Instance.DegreeConvention == 0, DayNightManager.Instance.Latitude);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] ClockPanel:RefreshLatitude -> Exception: " + e.Message);
+            }
+        }
+
+        private void RefreshLongitude()
+        {
+            try
+            {
+                _longitudeLabel.text = GeoHelper.FormatDegree(ModConfig.Instance.DegreeConvention == 0, DayNightManager.Instance.Longitude);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] ClockPanel:RefreshLongitude -> Exception: " + e.Message);
             }
         }
 
