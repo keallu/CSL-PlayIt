@@ -38,6 +38,12 @@ namespace PlayIt.Panels
         private UILabel _worldDayNightSpeedSliderLabel;
         private UILabel _worldDayNightSpeedSliderNumeral;
         private UISlider _worldDayNightSpeedSlider;
+        private UILabel _worldDaySpeedSliderLabel;
+        private UILabel _worldDaySpeedSliderNumeral;
+        private UISlider _worldDaySpeedSlider;
+        private UILabel _worldNightSpeedSliderLabel;
+        private UILabel _worldNightSpeedSliderNumeral;
+        private UISlider _worldNightSpeedSlider;
         private UILabel _worldDayTimeHourSliderLabel;
         private UILabel _worldDayTimeHourSliderNumeral;
         private UISlider _worldDayTimeHourSlider;
@@ -71,6 +77,7 @@ namespace PlayIt.Panels
         private UILabel _advancedTimeConventionDropDownLabel;
         private UIDropDown _advancedTimeConventionDropDown;
         private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
+        private UICheckBox _advancedSeparateDayNightSpeedCheckBox;
         private UICheckBox _advancedPauseDayNightCycleOnSimulationPauseCheckBox;
         private UISprite _advancedTimeDivider;
         private UILabel _advancedWeatherTitle;
@@ -207,54 +214,61 @@ namespace PlayIt.Panels
 
                 if (ModConfig.Instance.KeymappingsEnabled && KeyChecker.GetKeyCombo(out int key))
                 {
-                    if (ModConfig.Instance.KeymappingsIncreaseLatitude == key && _worldLatitudeSlider.value <= 70f)
+                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
                     {
-                        _worldLatitudeSlider.value = _worldLatitudeSlider.value + 10f;
+                        if (ModConfig.Instance.KeymappingsIncreaseLatitude == key)
+                        {
+                            SetUISlider(_worldLatitudeSlider, true, 10f);
+                        }
+
+                        if (ModConfig.Instance.KeymappingsDecreaseLatitude == key)
+                        {
+                            SetUISlider(_worldLatitudeSlider, false, 10f);
+                        }
+
+                        if (ModConfig.Instance.KeymappingsIncreaseLongitude == key)
+                        {
+                            SetUISlider(_worldLongitudeSlider, true, 10f);
+                        }
+
+                        if (ModConfig.Instance.KeymappingsDecreaseLongitude == key)
+                        {
+                            SetUISlider(_worldLongitudeSlider, false, 10f);
+                        }
                     }
 
-                    if (ModConfig.Instance.KeymappingsDecreaseLatitude == key && _worldLatitudeSlider.value >= -70f)
+                    if (ModConfig.Instance.KeymappingsIncreaseGameSpeed == key)
                     {
-                        _worldLatitudeSlider.value = _worldLatitudeSlider.value - 10f;
+                        SetUISlider(_worldGameSpeedSlider, true, 0.05f);
                     }
 
-                    if (ModConfig.Instance.KeymappingsIncreaseLongitude == key && _worldLongitudeSlider.value <= 170f)
+                    if (ModConfig.Instance.KeymappingsDecreaseGameSpeed == key)
                     {
-                        _worldLongitudeSlider.value = _worldLongitudeSlider.value + 10f;
+                        SetUISlider(_worldGameSpeedSlider, false, 0.05f);
                     }
 
-                    if (ModConfig.Instance.KeymappingsDecreaseLongitude == key && _worldLongitudeSlider.value >= -170f)
+                    if (ModConfig.Instance.KeymappingsIncreaseDayNightSpeed == key)
                     {
-                        _worldLongitudeSlider.value = _worldLongitudeSlider.value - 10f;
+                        SetUISlider(_worldDayNightSpeedSlider, true, 0.5f);
+                        SetUISlider(_worldDaySpeedSlider, true, 0.5f);
+                        SetUISlider(_worldNightSpeedSlider, true, 0.5f);
                     }
 
-                    if (ModConfig.Instance.KeymappingsIncreaseGameSpeed == key && _worldGameSpeedSlider.value <= 2.95f)
+                    if (ModConfig.Instance.KeymappingsDecreaseDayNightSpeed == key)
                     {
-                        _worldGameSpeedSlider.value = _worldGameSpeedSlider.value + 0.05f;
+                        SetUISlider(_worldDayNightSpeedSlider, false, 0.5f);
+                        SetUISlider(_worldDaySpeedSlider, false, 0.5f);
+                        SetUISlider(_worldNightSpeedSlider, false, 0.5f);
                     }
 
-                    if (ModConfig.Instance.KeymappingsDecreaseGameSpeed == key && _worldGameSpeedSlider.value >= 0.06f)
+                    if (ModConfig.Instance.KeymappingsForwardTimeOfDay == key)
                     {
-                        _worldGameSpeedSlider.value = _worldGameSpeedSlider.value - 0.05f;
+                        SetUISlider(_worldDayTimeHourSlider, true, 1f);
                     }
 
-                    if (ModConfig.Instance.KeymappingsIncreaseDayNightSpeed == key && _worldDayNightSpeedSlider.value <= 22.95f)
+                    if (ModConfig.Instance.KeymappingsBackwardTimeOfDay == key)
                     {
-                        _worldDayNightSpeedSlider.value = _worldDayNightSpeedSlider.value + 0.5f;
-                    }
-
-                    if (ModConfig.Instance.KeymappingsDecreaseDayNightSpeed == key && _worldDayNightSpeedSlider.value >= -0.95f)
-                    {
-                        _worldDayNightSpeedSlider.value = ModConfig.Instance.DayNightSpeed - 0.5f;
-                    }
-
-                    if (ModConfig.Instance.KeymappingsForwardTimeOfDay == key && _worldDayTimeHourSlider.value <= 22.99f)
-                    {
-                        _worldDayTimeHourSlider.value = _worldDayTimeHourSlider.value + 1f;
-                    }
-
-                    if (ModConfig.Instance.KeymappingsBackwardTimeOfDay == key && _worldDayTimeHourSlider.value >= 1f)
-                    {
-                        _worldDayTimeHourSlider.value = _worldDayTimeHourSlider.value - 1f;
+                        SetUISlider(_worldDayTimeHourSlider, false, 1f);
                     }
                 }
             }
@@ -290,6 +304,12 @@ namespace PlayIt.Panels
                 DestroyGameObject(_worldDayNightSpeedSliderLabel);
                 DestroyGameObject(_worldDayNightSpeedSliderNumeral);
                 DestroyGameObject(_worldDayNightSpeedSlider);
+                DestroyGameObject(_worldDaySpeedSliderLabel);
+                DestroyGameObject(_worldDaySpeedSliderNumeral);
+                DestroyGameObject(_worldDaySpeedSlider);
+                DestroyGameObject(_worldNightSpeedSliderLabel);
+                DestroyGameObject(_worldNightSpeedSliderNumeral);
+                DestroyGameObject(_worldNightSpeedSlider);
                 DestroyGameObject(_worldDayTimeHourSliderLabel);
                 DestroyGameObject(_worldDayTimeHourSliderNumeral);
                 DestroyGameObject(_worldDayTimeHourSlider);
@@ -321,6 +341,7 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedTimeConventionDropDownLabel);
                 DestroyGameObject(_advancedTimeConventionDropDown);
                 DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
+                DestroyGameObject(_advancedSeparateDayNightSpeedCheckBox);
                 DestroyGameObject(_advancedPauseDayNightCycleOnSimulationPauseCheckBox);
                 DestroyGameObject(_advancedTimeDivider);
                 DestroyGameObject(_advancedWeatherTitle);
@@ -395,7 +416,7 @@ namespace PlayIt.Panels
                 clipChildren = true;
                 isVisible = false;
                 width = 400f;
-                height = 450f;
+                height = 500f;
 
                 _title = UIUtils.CreateMenuPanelTitle(this, _ingameAtlas, "Play It!");
                 _title.relativePosition = new Vector3(width / 2f - _title.width / 2f, 15f);
@@ -568,6 +589,54 @@ namespace PlayIt.Panels
                         if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
                         {
                             _worldDayNightSpeedSlider.value = 0f;
+                        }
+                    };
+
+                    _worldDaySpeedSliderLabel = UIUtils.CreateLabel(panel, "WorldDaySpeedSliderLabel", "Day Speed");
+                    _worldDaySpeedSliderLabel.tooltip = "Set the speed of the day cycle";
+
+                    _worldDaySpeedSliderNumeral = UIUtils.CreateLabel(_worldDaySpeedSliderLabel, "WorldDaySpeedSliderNumeral", SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.DaySpeed));
+                    _worldDaySpeedSliderNumeral.width = 100f;
+                    _worldDaySpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _worldDaySpeedSliderNumeral.relativePosition = new Vector3(panel.width - _worldDaySpeedSliderNumeral.width - 10f, 0f);
+
+                    _worldDaySpeedSlider = UIUtils.CreateSlider(panel, "WorldDaySpeedSlider", _ingameAtlas, -1f, 23f, 0.5f, 0.5f, ModConfig.Instance.DaySpeed);
+                    _worldDaySpeedSlider.eventValueChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.DaySpeed = value;
+                        ModConfig.Instance.Save();
+
+                        _worldDaySpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
+                    };
+                    _worldDaySpeedSlider.eventMouseUp += (component, eventParam) =>
+                    {
+                        if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
+                        {
+                            _worldDaySpeedSlider.value = 0f;
+                        }
+                    };
+
+                    _worldNightSpeedSliderLabel = UIUtils.CreateLabel(panel, "WorldNightSpeedSliderLabel", "Night Speed");
+                    _worldNightSpeedSliderLabel.tooltip = "Set the speed of the night cycle";
+
+                    _worldNightSpeedSliderNumeral = UIUtils.CreateLabel(_worldNightSpeedSliderLabel, "WorldNightSpeedSliderNumeral", SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.NightSpeed));
+                    _worldNightSpeedSliderNumeral.width = 100f;
+                    _worldNightSpeedSliderNumeral.textAlignment = UIHorizontalAlignment.Right;
+                    _worldNightSpeedSliderNumeral.relativePosition = new Vector3(panel.width - _worldNightSpeedSliderNumeral.width - 10f, 0f);
+
+                    _worldNightSpeedSlider = UIUtils.CreateSlider(panel, "WorldNightSpeedSlider", _ingameAtlas, -1f, 23f, 0.5f, 0.5f, ModConfig.Instance.NightSpeed);
+                    _worldNightSpeedSlider.eventValueChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.NightSpeed = value;
+                        ModConfig.Instance.Save();
+
+                        _worldNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, value);
+                    };
+                    _worldNightSpeedSlider.eventMouseUp += (component, eventParam) =>
+                    {
+                        if (eventParam.buttons.IsFlagSet(UIMouseButton.Right))
+                        {
+                            _worldNightSpeedSlider.value = 0f;
                         }
                     };
 
@@ -855,6 +924,16 @@ namespace PlayIt.Panels
                         _worldDayNightSpeedSliderNumeral.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, DayNightManager.Instance.DayNightSpeed);
                     };
 
+                    _advancedSeparateDayNightSpeedCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedSeparateDayNightCycleCheckBox", _ingameAtlas, "Separate Day and Night Speed", ModConfig.Instance.SeparateDayNightSpeed);
+                    _advancedSeparateDayNightSpeedCheckBox.tooltip = "Set if day/night speed should be separate";
+                    _advancedSeparateDayNightSpeedCheckBox.eventCheckChanged += (component, value) =>
+                    {
+                        ModConfig.Instance.SeparateDayNightSpeed = value;
+                        ModConfig.Instance.Save();
+
+                        SetDayNightUIVisibility();
+                    };
+
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set if day/night cycle should be automatically paused when simulation pauses";
                     _advancedPauseDayNightCycleOnSimulationPauseCheckBox.eventCheckChanged += (component, value) =>
@@ -974,53 +1053,56 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    _advancedKeymappingsIncreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDownLabel", "Increase Latitude");
-                    _advancedKeymappingsIncreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for increasing latitude";
-
-                    _advancedKeymappingsIncreaseLatitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDown", _ingameAtlas);
-                    _advancedKeymappingsIncreaseLatitudeDropDown.items = ModInvariables.KeymappingNames;
-                    _advancedKeymappingsIncreaseLatitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseLatitude;
-                    _advancedKeymappingsIncreaseLatitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
                     {
-                        ModConfig.Instance.KeymappingsIncreaseLatitude = value;
-                        ModConfig.Instance.Save();
-                    };
+                        _advancedKeymappingsIncreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDownLabel", "Increase Latitude");
+                        _advancedKeymappingsIncreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for increasing latitude";
 
-                    _advancedKeymappingsDecreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLatitudeDropDownLabel", "Decrease Latitude");
-                    _advancedKeymappingsDecreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for decreasing latitude";
+                        _advancedKeymappingsIncreaseLatitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDown", _ingameAtlas);
+                        _advancedKeymappingsIncreaseLatitudeDropDown.items = ModInvariables.KeymappingNames;
+                        _advancedKeymappingsIncreaseLatitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseLatitude;
+                        _advancedKeymappingsIncreaseLatitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                        {
+                            ModConfig.Instance.KeymappingsIncreaseLatitude = value;
+                            ModConfig.Instance.Save();
+                        };
 
-                    _advancedKeymappingsDecreaseLatitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLatitudeDropDown", _ingameAtlas);
-                    _advancedKeymappingsDecreaseLatitudeDropDown.items = ModInvariables.KeymappingNames;
-                    _advancedKeymappingsDecreaseLatitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseLatitude;
-                    _advancedKeymappingsDecreaseLatitudeDropDown.eventSelectedIndexChanged += (component, value) =>
-                    {
-                        ModConfig.Instance.KeymappingsDecreaseLatitude = value;
-                        ModConfig.Instance.Save();
-                    };
+                        _advancedKeymappingsDecreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLatitudeDropDownLabel", "Decrease Latitude");
+                        _advancedKeymappingsDecreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for decreasing latitude";
 
-                    _advancedKeymappingsIncreaseLongitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLongitudeDropDownLabel", "Increase Longitude");
-                    _advancedKeymappingsIncreaseLongitudeDropDownLabel.tooltip = "Set the keymapping for increasing longitude";
+                        _advancedKeymappingsDecreaseLatitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLatitudeDropDown", _ingameAtlas);
+                        _advancedKeymappingsDecreaseLatitudeDropDown.items = ModInvariables.KeymappingNames;
+                        _advancedKeymappingsDecreaseLatitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseLatitude;
+                        _advancedKeymappingsDecreaseLatitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                        {
+                            ModConfig.Instance.KeymappingsDecreaseLatitude = value;
+                            ModConfig.Instance.Save();
+                        };
 
-                    _advancedKeymappingsIncreaseLongitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLongitudeDropDown", _ingameAtlas);
-                    _advancedKeymappingsIncreaseLongitudeDropDown.items = ModInvariables.KeymappingNames;
-                    _advancedKeymappingsIncreaseLongitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseLongitude;
-                    _advancedKeymappingsIncreaseLongitudeDropDown.eventSelectedIndexChanged += (component, value) =>
-                    {
-                        ModConfig.Instance.KeymappingsIncreaseLongitude = value;
-                        ModConfig.Instance.Save();
-                    };
+                        _advancedKeymappingsIncreaseLongitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLongitudeDropDownLabel", "Increase Longitude");
+                        _advancedKeymappingsIncreaseLongitudeDropDownLabel.tooltip = "Set the keymapping for increasing longitude";
 
-                    _advancedKeymappingsDecreaseLongitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLongitudeDropDownLabel", "Decrease Longitude");
-                    _advancedKeymappingsDecreaseLongitudeDropDownLabel.tooltip = "Set the keymapping for decreasing longitude";
+                        _advancedKeymappingsIncreaseLongitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLongitudeDropDown", _ingameAtlas);
+                        _advancedKeymappingsIncreaseLongitudeDropDown.items = ModInvariables.KeymappingNames;
+                        _advancedKeymappingsIncreaseLongitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsIncreaseLongitude;
+                        _advancedKeymappingsIncreaseLongitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                        {
+                            ModConfig.Instance.KeymappingsIncreaseLongitude = value;
+                            ModConfig.Instance.Save();
+                        };
 
-                    _advancedKeymappingsDecreaseLongitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLongitudeDropDown", _ingameAtlas);
-                    _advancedKeymappingsDecreaseLongitudeDropDown.items = ModInvariables.KeymappingNames;
-                    _advancedKeymappingsDecreaseLongitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseLongitude;
-                    _advancedKeymappingsDecreaseLongitudeDropDown.eventSelectedIndexChanged += (component, value) =>
-                    {
-                        ModConfig.Instance.KeymappingsDecreaseLongitude = value;
-                        ModConfig.Instance.Save();
-                    };
+                        _advancedKeymappingsDecreaseLongitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLongitudeDropDownLabel", "Decrease Longitude");
+                        _advancedKeymappingsDecreaseLongitudeDropDownLabel.tooltip = "Set the keymapping for decreasing longitude";
+
+                        _advancedKeymappingsDecreaseLongitudeDropDown = UIUtils.CreateDropDown(_advancedScrollablePanel, "AdvancedKeymappingsDecreaseLongitudeDropDown", _ingameAtlas);
+                        _advancedKeymappingsDecreaseLongitudeDropDown.items = ModInvariables.KeymappingNames;
+                        _advancedKeymappingsDecreaseLongitudeDropDown.selectedIndex = ModConfig.Instance.KeymappingsDecreaseLongitude;
+                        _advancedKeymappingsDecreaseLongitudeDropDown.eventSelectedIndexChanged += (component, value) =>
+                        {
+                            ModConfig.Instance.KeymappingsDecreaseLongitude = value;
+                            ModConfig.Instance.Save();
+                        };
+                    }
 
                     _advancedKeymappingsIncreaseGameSpeedDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseGameSpeedDropDownLabel", "Increase Game Speed");
                     _advancedKeymappingsIncreaseGameSpeedDropDownLabel.tooltip = "Set the keymapping for increasing game speed";
@@ -1122,6 +1204,8 @@ namespace PlayIt.Panels
                             }
                         };
                     }
+
+                    SetDayNightUIVisibility();
                 }
             }
             catch (Exception e)
@@ -1140,6 +1224,74 @@ namespace PlayIt.Panels
             catch (Exception e)
             {
                 Debug.Log("[Play It!] MainPanel:UpdateUI -> Exception: " + e.Message);
+            }
+        }
+
+        private void SetUISlider(UISlider slider, bool doIncrement, float step)
+        {
+            try
+            {
+                if (doIncrement)
+                {
+                    if (slider.value + step <= slider.maxValue)
+                    {
+                        slider.value += step;
+                    }
+                    else
+                    {
+                        slider.value = slider.maxValue;
+                    }
+                }
+                else
+                {
+                    if (slider.value - step >= slider.minValue)
+                    {
+                        slider.value -= step;
+                    }
+                    else
+                    {
+                        slider.value = slider.minValue;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:SetUISlider -> Exception: " + e.Message);
+            }
+        }
+
+        private void SetDayNightUIVisibility()
+        {
+            try
+            {
+                if (ModConfig.Instance.SeparateDayNightSpeed)
+                {
+                    _worldDayNightSpeedSliderLabel.isVisible = false;
+                    _worldDayNightSpeedSliderNumeral.isVisible = false;
+                    _worldDayNightSpeedSlider.isVisible = false;
+                    _worldDaySpeedSliderLabel.isVisible = true;
+                    _worldDaySpeedSliderNumeral.isVisible = true;
+                    _worldDaySpeedSlider.isVisible = true;
+                    _worldNightSpeedSliderLabel.isVisible = true;
+                    _worldNightSpeedSliderNumeral.isVisible = true;
+                    _worldNightSpeedSlider.isVisible = true;
+                }
+                else
+                {
+                    _worldDayNightSpeedSliderLabel.isVisible = true;
+                    _worldDayNightSpeedSliderNumeral.isVisible = true;
+                    _worldDayNightSpeedSlider.isVisible = true;
+                    _worldDaySpeedSliderLabel.isVisible = false;
+                    _worldDaySpeedSliderNumeral.isVisible = false;
+                    _worldDaySpeedSlider.isVisible = false;
+                    _worldNightSpeedSliderLabel.isVisible = false;
+                    _worldNightSpeedSliderNumeral.isVisible = false;
+                    _worldNightSpeedSlider.isVisible = false;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("[Play It!] MainPanel:SetDayNightUIVisibility -> Exception: " + e.Message);
             }
         }
 

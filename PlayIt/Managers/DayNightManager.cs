@@ -54,6 +54,22 @@ namespace PlayIt.Managers
             }
         }
 
+        public float DaySpeed
+        {
+            get
+            {
+                return ModConfig.Instance.DaySpeed;
+            }
+        }
+
+        public float NightSpeed
+        {
+            get
+            {
+                return ModConfig.Instance.NightSpeed;
+            }
+        }
+
         public float DayTimeHour
         {
             get
@@ -104,6 +120,10 @@ namespace PlayIt.Managers
         {
             try
             {
+                float speed = ModConfig.Instance.SeparateDayNightSpeed
+                    ? IsNightTime() ? ModConfig.Instance.NightSpeed : ModConfig.Instance.DaySpeed
+                    : ModConfig.Instance.DayNightSpeed;
+
                 bool forcePause = false;
 
                 if (ModConfig.Instance.PauseDayNightCycleOnSimulationPause)
@@ -111,7 +131,7 @@ namespace PlayIt.Managers
                     forcePause = simulationManager.SimulationPaused || simulationManager.ForcedSimulationPaused;
                 }
 
-                if (ModConfig.Instance.DayNightSpeed == -1f)
+                if (speed == -1f)
                 {
                     if (!simulationManager.SimulationPaused && !simulationManager.ForcedSimulationPaused)
                     {
@@ -122,7 +142,7 @@ namespace PlayIt.Managers
                         }
                     }
                 }
-                else if (ModConfig.Instance.DayNightSpeed == 0f)
+                else if (speed == 0f)
                 {
                     if (!forcePause)
                     {
@@ -133,7 +153,7 @@ namespace PlayIt.Managers
                 {
                     if (!forcePause)
                     {
-                        float factor = Time.deltaTime * ModConfig.Instance.DayNightSpeed * ModConfig.Instance.DayNightSpeed / 576f;
+                        float factor = Time.deltaTime * speed * speed / 576f;
                         uint offset = (uint)(factor * SimulationManager.DAYTIME_FRAMES);
                         uint dayTimeOffsetFrames = (simulationManager.m_dayTimeOffsetFrames + offset) & (SimulationManager.DAYTIME_FRAMES - 1);
                         simulationManager.m_dayTimeOffsetFrames = dayTimeOffsetFrames;

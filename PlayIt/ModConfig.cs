@@ -17,6 +17,8 @@
         public float Longitude { get; set; } = float.NaN;
         public float GameSpeed { get; set; } = 1f;
         public float DayNightSpeed { get; set; } = 0f;
+        public float DaySpeed { get; set; } = 0f;
+        public float NightSpeed { get; set; } = 0f;
         public float RainIntensity { get; set; } = 0f;
         public float FogIntensity { get; set; } = 0f;
         public float CloudIntensity { get; set; } = 0f;
@@ -24,6 +26,7 @@
         public int DegreeConvention { get; set; } = 1;
         public int TimeConvention { get; set; } = 1;
         public bool ShowSpeedInPercentages { get; set; } = false;
+        public bool SeparateDayNightSpeed { get; set; } = false;
         public bool PauseDayNightCycleOnSimulationPause { get; set; } = false;
         public bool LockRainIntensity { get; set; } = false;
         public bool LockFogIntensity { get; set; } = false;

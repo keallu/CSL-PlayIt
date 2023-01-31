@@ -12,7 +12,7 @@ namespace PlayIt.Panels
         private float _timer;
 
         private MainPanel _mainPanel;
-        
+
         private UILabel _timeofDayLabel;
         private UILabel _gameSpeedLabel;
         private UILabel _dayNightSpeedLabel;
@@ -105,7 +105,7 @@ namespace PlayIt.Panels
             base.OnDestroy();
 
             try
-            {                
+            {
                 DestroyGameObject(_timeofDayLabel);
                 DestroyGameObject(_gameSpeedLabel);
                 DestroyGameObject(_dayNightSpeedLabel);
@@ -163,7 +163,7 @@ namespace PlayIt.Panels
                     {
                         _mainPanel.ForceDayTimeHour(0f);
                     }
-                };                
+                };
 
                 _timeofDayLabel = UIUtils.CreateLabel(this, "TimeofDayLabel", "11:07");
                 _timeofDayLabel.textScale = 2f;
@@ -211,13 +211,13 @@ namespace PlayIt.Panels
             try
             {
                 isVisible = ModConfig.Instance.ShowClock;
-                absolutePosition = new Vector3(ModConfig.Instance.ClockPositionX, ModConfig.Instance.ClockPositionY);                
+                absolutePosition = new Vector3(ModConfig.Instance.ClockPositionX, ModConfig.Instance.ClockPositionY);
                 _gameSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
                 _dayNightSpeedLabel.isVisible = ModConfig.Instance.ShowSpeedInClockPanel;
                 _latitudeLabel.isVisible = ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel;
                 _longitudeLabel.isVisible = ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel;
 
-                Color32 color = GetColor(ModConfig.Instance.TextColorInClockPanel);                
+                Color32 color = GetColor(ModConfig.Instance.TextColorInClockPanel);
                 _timeofDayLabel.textColor = color;
                 _gameSpeedLabel.textColor = color;
                 _dayNightSpeedLabel.textColor = color;
@@ -271,7 +271,9 @@ namespace PlayIt.Panels
         {
             try
             {
-                _dayNightSpeedLabel.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, DayNightManager.Instance.DayNightSpeed);
+                _dayNightSpeedLabel.text = SpeedHelper.FormatDayNightSpeed(ModConfig.Instance.ShowSpeedInPercentages, ModConfig.Instance.SeparateDayNightSpeed
+                    ? DayNightManager.Instance.IsNightTime() ? DayNightManager.Instance.NightSpeed : DayNightManager.Instance.DaySpeed
+                    : DayNightManager.Instance.DayNightSpeed);
             }
             catch (Exception e)
             {
