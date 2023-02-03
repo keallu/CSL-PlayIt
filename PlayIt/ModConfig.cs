@@ -27,7 +27,7 @@
         public int TimeConvention { get; set; } = 1;
         public bool ShowSpeedInPercentages { get; set; } = false;
         public bool SeparateDayNightSpeed { get; set; } = false;
-        public bool PauseDayNightCycleOnSimulationPause { get; set; } = false;
+        public bool ContinueDayNightCycleOnSimulationPause { get; set; } = false;
         public bool LockRainIntensity { get; set; } = false;
         public bool LockFogIntensity { get; set; } = false;
         public bool LockCloudIntensity { get; set; } = false;

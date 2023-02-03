@@ -78,7 +78,7 @@ namespace PlayIt.Panels
         private UIDropDown _advancedTimeConventionDropDown;
         private UICheckBox _advancedShowSpeedInPercentagesCheckBox;
         private UICheckBox _advancedSeparateDayNightSpeedCheckBox;
-        private UICheckBox _advancedPauseDayNightCycleOnSimulationPauseCheckBox;
+        private UICheckBox _advancedContinueDayNightCycleOnSimulationPauseCheckBox;
         private UISprite _advancedTimeDivider;
         private UILabel _advancedWeatherTitle;
         private UICheckBox _advancedLockRainIntensityCheckBox;
@@ -187,7 +187,7 @@ namespace PlayIt.Panels
                 {
                     _timer -= 1;
 
-                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                    if (FeatureManager.Instance.IsAvailable(FeatureManager.Feature.LatitudeAndLongitude))
                     {
                         UpdateLatitudeAndLongitude();
                     }
@@ -196,7 +196,7 @@ namespace PlayIt.Panels
 
                     if (isVisible)
                     {
-                        if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                        if (FeatureManager.Instance.IsAvailable(FeatureManager.Feature.LatitudeAndLongitude))
                         {
                             RefreshLatitude();
                             RefreshLongitude();
@@ -214,7 +214,7 @@ namespace PlayIt.Panels
 
                 if (ModConfig.Instance.KeymappingsEnabled && KeyChecker.GetKeyCombo(out int key))
                 {
-                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                    if (FeatureManager.Instance.IsAvailable(FeatureManager.Feature.LatitudeAndLongitude))
                     {
                         if (ModConfig.Instance.KeymappingsIncreaseLatitude == key)
                         {
@@ -342,7 +342,7 @@ namespace PlayIt.Panels
                 DestroyGameObject(_advancedTimeConventionDropDown);
                 DestroyGameObject(_advancedShowSpeedInPercentagesCheckBox);
                 DestroyGameObject(_advancedSeparateDayNightSpeedCheckBox);
-                DestroyGameObject(_advancedPauseDayNightCycleOnSimulationPauseCheckBox);
+                DestroyGameObject(_advancedContinueDayNightCycleOnSimulationPauseCheckBox);
                 DestroyGameObject(_advancedTimeDivider);
                 DestroyGameObject(_advancedWeatherTitle);
                 DestroyGameObject(_advancedLockRainIntensityCheckBox);
@@ -474,7 +474,7 @@ namespace PlayIt.Panels
                     panel.autoLayoutPadding.top = 0;
                     panel.autoLayoutPadding.bottom = 10;
 
-                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                    if (FeatureManager.Instance.IsAvailable(FeatureManager.Feature.LatitudeAndLongitude))
                     {
                         _worldLatitudeSliderLabel = UIUtils.CreateLabel(panel, "WorldLatitudeSliderLabel", "Latitude");
                         _worldLatitudeSliderLabel.tooltip = "Set the latitude";
@@ -892,7 +892,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.DegreeConvention = value;
                         ModConfig.Instance.Save();
 
-                        if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                        if (FeatureManager.Instance.IsAvailable(FeatureManager.Feature.LatitudeAndLongitude))
                         {
                             _worldLatitudeSliderNumeral.text = GeoHelper.FormatDegree(value == 0, DayNightManager.Instance.Latitude);
                             _worldLongitudeSliderNumeral.text = GeoHelper.FormatDegree(value == 0, DayNightManager.Instance.Longitude);
@@ -934,11 +934,11 @@ namespace PlayIt.Panels
                         SetDayNightUIVisibility();
                     };
 
-                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedPauseDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Pause Day/Night when Simulation Pauses", ModConfig.Instance.PauseDayNightCycleOnSimulationPause);
-                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set if day/night cycle should be automatically paused when simulation pauses";
-                    _advancedPauseDayNightCycleOnSimulationPauseCheckBox.eventCheckChanged += (component, value) =>
+                    _advancedContinueDayNightCycleOnSimulationPauseCheckBox = UIUtils.CreateCheckBox(_advancedScrollablePanel, "AdvancedContinueDayNightCycleOnSimulationPauseCheckBox", _ingameAtlas, "Continue when Simulation Pauses", ModConfig.Instance.ContinueDayNightCycleOnSimulationPause);
+                    _advancedContinueDayNightCycleOnSimulationPauseCheckBox.tooltip = "Set if day/night cycle should continue when simulation pauses";
+                    _advancedContinueDayNightCycleOnSimulationPauseCheckBox.eventCheckChanged += (component, value) =>
                     {
-                        ModConfig.Instance.PauseDayNightCycleOnSimulationPause = value;
+                        ModConfig.Instance.ContinueDayNightCycleOnSimulationPause = value;
                         ModConfig.Instance.Save();
                     };
 
@@ -1053,7 +1053,7 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     };
 
-                    if (!CompatibilityHelper.IsAnyLatitudeAndLongitudeManipulatingModsEnabled())
+                    if (FeatureManager.Instance.IsAvailable(FeatureManager.Feature.LatitudeAndLongitude))
                     {
                         _advancedKeymappingsIncreaseLatitudeDropDownLabel = UIUtils.CreateLabel(_advancedScrollablePanel, "AdvancedKeymappingsIncreaseLatitudeDropDownLabel", "Increase Latitude");
                         _advancedKeymappingsIncreaseLatitudeDropDownLabel.tooltip = "Set the keymapping for increasing latitude";
@@ -1185,8 +1185,6 @@ namespace PlayIt.Panels
                                 Vector2 position;
                                 Vector2 center;
                                 float angle;
-                                float dayTimeHour;
-                                float timeOfDay;
 
                                 component.GetHitPosition(eventParam.ray, out position);
                                 center = new Vector2(30, 30);
@@ -1197,10 +1195,48 @@ namespace PlayIt.Panels
                                     angle = 360.0f - angle;
                                 }
 
-                                dayTimeHour = angle * 12.0f / 180.0f;
-                                timeOfDay = SimulationManager.Lagrange4(dayTimeHour, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
+                                if (Input.GetKey(KeyCode.LeftShift))
+                                {
+                                    float gameSpeed = angle * 3.0f / 360.0f;
 
-                                _worldDayTimeHourSlider.value = dayTimeHour + (dayTimeHour - timeOfDay);
+                                    _worldGameSpeedSlider.value = gameSpeed;
+                                }
+                                else if (Input.GetKey(KeyCode.LeftControl))
+                                {
+                                    float daySpeed = angle * 23f / 360.0f;
+
+                                    if (ModConfig.Instance.SeparateDayNightSpeed)
+                                    {
+                                        _worldDaySpeedSlider.value = daySpeed;
+                                    }
+                                    else
+                                    {
+                                        _worldDayNightSpeedSlider.value = daySpeed;
+                                    }
+                                }
+                                else if (Input.GetKey(KeyCode.LeftAlt))
+                                {
+                                    float nightSpeed = angle * 23f / 360.0f;
+
+                                    if (ModConfig.Instance.SeparateDayNightSpeed)
+                                    {
+                                        _worldNightSpeedSlider.value = nightSpeed;
+                                    }
+                                    else
+                                    {
+                                        _worldDayNightSpeedSlider.value = nightSpeed;
+                                    }
+                                }
+                                else
+                                {
+                                    float dayTimeHour;
+                                    float timeOfDay;
+
+                                    dayTimeHour = angle * 24.0f / 360.0f;
+                                    timeOfDay = SimulationManager.Lagrange4(dayTimeHour, 0f, SimulationManager.SUNRISE_HOUR, SimulationManager.SUNSET_HOUR, 24f, 0f, 6f, 18f, 24f);
+
+                                    _worldDayTimeHourSlider.value = dayTimeHour + (dayTimeHour - timeOfDay);
+                                }
                             }
                         };
                     }

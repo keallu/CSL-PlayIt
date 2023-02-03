@@ -126,7 +126,7 @@ namespace PlayIt.Managers
 
                 bool forcePause = false;
 
-                if (ModConfig.Instance.PauseDayNightCycleOnSimulationPause)
+                if (!ModConfig.Instance.ContinueDayNightCycleOnSimulationPause)
                 {
                     forcePause = simulationManager.SimulationPaused || simulationManager.ForcedSimulationPaused;
                 }
