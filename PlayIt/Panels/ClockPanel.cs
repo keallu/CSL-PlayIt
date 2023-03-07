@@ -13,6 +13,7 @@ namespace PlayIt.Panels
 
         private MainPanel _mainPanel;
 
+        private UILabel _clockLabel;
         private UILabel _timeofDayLabel;
         private UILabel _gameSpeedLabel;
         private UILabel _dayNightSpeedLabel;
@@ -106,6 +107,7 @@ namespace PlayIt.Panels
 
             try
             {
+                DestroyGameObject(_clockLabel);
                 DestroyGameObject(_timeofDayLabel);
                 DestroyGameObject(_gameSpeedLabel);
                 DestroyGameObject(_dayNightSpeedLabel);
@@ -139,7 +141,7 @@ namespace PlayIt.Panels
                 zOrder = 25;
                 isVisible = false;
                 width = 160f;
-                height = 65f;
+                height = 75f;
 
                 eventMouseMove += (component, eventParam) =>
                 {
@@ -153,7 +155,27 @@ namespace PlayIt.Panels
                         ModConfig.Instance.Save();
                     }
                 };
-                eventDoubleClick += (component, eventParam) =>
+
+                _clockLabel = UIUtils.CreateLabel(this, "ClockLabel", "Game");
+                _clockLabel.textScale = 0.55f;
+                _clockLabel.textAlignment = UIHorizontalAlignment.Center;
+                _clockLabel.width = 160f;
+                _clockLabel.height = 10f;
+                _clockLabel.relativePosition = new Vector3((width - _clockLabel.width) / 2f, 2.5f);
+                _clockLabel.eventDoubleClick += (component, eventParam) =>
+                {
+                    ModConfig.Instance.ShowSystemClock = !ModConfig.Instance.ShowSystemClock;
+                    ModConfig.Instance.Save();
+                    RefreshTimeOfDay();
+                };
+
+                _timeofDayLabel = UIUtils.CreateLabel(this, "TimeofDayLabel", "11:07");
+                _timeofDayLabel.textScale = 2f;
+                _timeofDayLabel.textAlignment = UIHorizontalAlignment.Center;
+                _timeofDayLabel.width = 160f;
+                _timeofDayLabel.height = 35f;
+                _timeofDayLabel.relativePosition = new Vector3((width - _timeofDayLabel.width) / 2f, 10f);
+                _timeofDayLabel.eventDoubleClick += (component, eventParam) =>
                 {
                     if (DayNightManager.Instance.IsNightTime() || DayNightManager.Instance.DayTimeHour == 0f)
                     {
@@ -163,14 +185,9 @@ namespace PlayIt.Panels
                     {
                         _mainPanel.ForceDayTimeHour(0f);
                     }
-                };
 
-                _timeofDayLabel = UIUtils.CreateLabel(this, "TimeofDayLabel", "11:07");
-                _timeofDayLabel.textScale = 2f;
-                _timeofDayLabel.textAlignment = UIHorizontalAlignment.Center;
-                _timeofDayLabel.width = 160f;
-                _timeofDayLabel.height = 35f;
-                _timeofDayLabel.relativePosition = new Vector3((width - _timeofDayLabel.width) / 2f, 0f);
+                    RefreshTimeOfDay();
+                };
 
                 _gameSpeedLabel = UIUtils.CreateLabel(this, "GameSpeedLabel", "Normal");
                 _gameSpeedLabel.textScale = 0.75f;
@@ -218,12 +235,14 @@ namespace PlayIt.Panels
                 _longitudeLabel.isVisible = ModConfig.Instance.ShowLatitudeAndLongitudeInClockPanel;
 
                 Color32 color = GetColor(ModConfig.Instance.TextColorInClockPanel);
+                _clockLabel.textColor = color;
                 _timeofDayLabel.textColor = color;
                 _gameSpeedLabel.textColor = color;
                 _dayNightSpeedLabel.textColor = color;
                 _latitudeLabel.textColor = color;
                 _longitudeLabel.textColor = color;
 
+                _clockLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
                 _timeofDayLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
                 _gameSpeedLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
                 _dayNightSpeedLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
@@ -231,6 +250,7 @@ namespace PlayIt.Panels
                 _longitudeLabel.useOutline = ModConfig.Instance.UseOutlineInClockPanel;
 
                 color = GetColor(ModConfig.Instance.OutlineColorInClockPanel);
+                _clockLabel.outlineColor = color;
                 _timeofDayLabel.outlineColor = color;
                 _gameSpeedLabel.outlineColor = color;
                 _dayNightSpeedLabel.outlineColor = color;
@@ -247,7 +267,16 @@ namespace PlayIt.Panels
         {
             try
             {
-                _timeofDayLabel.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, DayNightManager.Instance.DayTimeHour);
+                if (ModConfig.Instance.ShowSystemClock)
+                {
+                    _clockLabel.text = "System";
+                    _timeofDayLabel.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, DateTime.Now);
+                }
+                else
+                {
+                    _clockLabel.text = "Game";
+                    _timeofDayLabel.text = TimeHelper.FormatTimeOfDay(ModConfig.Instance.TimeConvention == 0, DayNightManager.Instance.DayTimeHour);
+                }
             }
             catch (Exception e)
             {

@@ -23,6 +23,7 @@
         public float FogIntensity { get; set; } = 0f;
         public float CloudIntensity { get; set; } = 0f;
         public float NorthernLightsIntensity { get; set; } = 0f;
+        public bool ShowSystemClock { get; set; } = false;
         public int DegreeConvention { get; set; } = 1;
         public int TimeConvention { get; set; } = 1;
         public bool ShowSpeedInPercentages { get; set; } = false;
@@ -32,8 +33,8 @@
         public bool LockFogIntensity { get; set; } = false;
         public bool LockCloudIntensity { get; set; } = false;
         public bool LockNorthernLightsIntensity { get; set; } = false;
-        public bool ShowLatitudeAndLongitudeInClockPanel { get; set; } = false;
         public bool ShowSpeedInClockPanel { get; set; } = false;
+        public bool ShowLatitudeAndLongitudeInClockPanel { get; set; } = false;
         public int TextColorInClockPanel { get; set; } = 0;
         public bool UseOutlineInClockPanel { get; set; } = false;
         public int OutlineColorInClockPanel { get; set; } = 0;

@@ -16,5 +16,10 @@ namespace PlayIt.Helpers
 
             return useTwelweHourConvention ? dateTime.ToString("hh:mm tt") : dateTime.ToString("HH:mm");
         }
+
+        public static string FormatTimeOfDay(bool useTwelweHourConvention, DateTime dateTime)
+        {
+            return useTwelweHourConvention ? dateTime.ToString("hh:mm tt") : dateTime.ToString("HH:mm");
+        }
     }
 }
