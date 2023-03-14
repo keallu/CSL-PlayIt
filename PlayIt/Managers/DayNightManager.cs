@@ -88,7 +88,7 @@ namespace PlayIt.Managers
 
         public bool IsNightTime()
         {
-            return simulationManager.m_isNightTime;
+            return DayTimeHour < SimulationManager.SUNRISE_HOUR || DayTimeHour > SimulationManager.SUNSET_HOUR;
         }
 
         public void Awake()
